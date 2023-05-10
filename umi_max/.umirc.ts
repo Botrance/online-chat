@@ -6,13 +6,14 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
+  mock: false,
   layout: {
     title: '@umijs/max',
   },
   routes: [
     {
       path: '/',
-      redirect: '/home',
+      redirect: '/login',
     },
     {
       name: '首页',
@@ -30,7 +31,7 @@ export default defineConfig({
       component: './Table',
     },
     {
-      name: '登录页面',\
+      name: '登录页面',
       path: '/login' ,
       component: './Login',
     }
