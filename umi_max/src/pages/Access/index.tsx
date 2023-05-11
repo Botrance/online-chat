@@ -1,9 +1,14 @@
 import { PageContainer } from '@ant-design/pro-components';
-import { Access, useAccess } from '@umijs/max';
 import { Button } from 'antd';
 
+let authenticate = () => {
+  // 获取页面中存储的token
+  let token = sessionStorage.getItem('token');
+  // 根据是否存在token,返回不同的值
+  return token ? true : false
+}
+
 const AccessPage: React.FC = () => {
-  const access = useAccess();
   return (
     <PageContainer
       ghost
@@ -11,9 +16,7 @@ const AccessPage: React.FC = () => {
         title: '权限示例',
       }}
     >
-      <Access accessible={access.canSeeAdmin}>
-        <Button>只有 Admin 可以看到这个按钮</Button>
-      </Access>
+      <Button>只有 Admin 可以看到这个按钮</Button>
     </PageContainer>
   );
 };

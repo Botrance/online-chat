@@ -2,7 +2,7 @@ const DB = require("../config/dbconfig"); // 导入数据库配置文件
 
 const Sequelize = require("sequelize");
 
-const adminModel = DB.define("admin", { // "admin"是info数据库下的表，第一个参数是表名
+const authModel = DB.define("auth", { // "auth"是info数据库下的表，第一个参数是表名
     id: { // id与数据库中的列名保持一致
         type: Sequelize.INTEGER, // int类型
         primaryKey: true, // 主键
@@ -22,4 +22,4 @@ const adminModel = DB.define("admin", { // "admin"是info数据库下的表，�
     timestamps: false // 不使用时间戳
 })
 
-module.exports = adminModel; // 导出该模块
+module.exports = authModel; // 导出该模块

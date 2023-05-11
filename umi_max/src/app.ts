@@ -1,4 +1,27 @@
 // 运行时配置
+import type { RequestConfig } from '@umijs/max';
+
+export const request: RequestConfig = {
+  timeout: 1000,
+  // other axios options you want
+  errorConfig: {
+    errorHandler(err) {
+      console.log(err);
+    },
+    errorThrower() {},
+  },
+  requestInterceptors: [
+    (config: any) => {
+      const sessionToken = sessionStorage.getItem('token');
+      console.log(config)
+      if (sessionToken) return {...config,headers:{
+        'Authorization': 'Bearer ' + sessionToken.toString()
+      }};
+      return config;
+    },
+  ],
+  responseInterceptors: [],
+};
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate

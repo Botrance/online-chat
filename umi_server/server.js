@@ -13,9 +13,9 @@ app.use(bodyParser()).use(cors({
   credentials: true}
 ));
 
-const adminRouter = require('./routes/admin');
-adminRouter(app);
+const authRouter = require('./routes/auth');
 
+router.use('/auth',authRouter)
 app.use(router.routes()).use(router.allowedMethods())
 
 app.listen(PORT, () => {

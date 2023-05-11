@@ -8,16 +8,16 @@ import {
 } from '@ant-design/icons';
 import {
   LoginForm,
+  ProConfigProvider,
   ProFormCaptcha,
   ProFormCheckbox,
   ProFormText,
-  ProConfigProvider,
 } from '@ant-design/pro-components';
-import { message, Space, Tabs } from 'antd';
-import type { CSSProperties } from 'react';
-import { useState } from 'react';
-import React from 'react';
 import { request } from '@umijs/max';
+import { Space, Tabs, message } from 'antd';
+import type { CSSProperties } from 'react';
+import React, { useState } from 'react';
+import {test,testToken} from '@/services/apiTest'
 
 type LoginType = 'phone' | 'account';
 
@@ -29,35 +29,44 @@ const iconStyles: CSSProperties = {
   cursor: 'pointer',
 };
 
-const tabItem=[
-  { label: '账户密码登录', key: 'account',  }, 
-  { label: '手机号登录', key: 'phone', }
-]
+const tabItem = [
+  { label: '账户密码登录', key: 'account' },
+  { label: '手机号登录', key: 'phone' },
+];
 
-interface loginParams{
-  username:string;
-  password:string;
+interface loginParams {
+  username: string;
+  password: string;
+}
+interface loginRes {
+  code:number,
+  msg:string,
+  token:string,
 }
 
 const LoginBox: React.FC = () => {
-  const [loginType, setLoginType] = useState<LoginType>('phone');
+  const [loginType, setLoginType] = useState<LoginType>('account');
 
-  const onSubmit = async (values:loginParams) => {
-
-    request('http://localhost:3030/login', {
+  const onSubmit = async (values: loginParams) => {
+    testToken();
+    request('http://localhost:3030/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      data:{
-        username:values.username,
-        password:values.password
-      }
-    }).then(function(response) {
-      console.log(response);
-    });
-    console.log(values);
-};
+      data: {
+        username: values.username,
+        password: values.password,
+      },
+    })
+      .then(function (response: loginRes) {
+        if(response.code===100){
+          sessionStorage.setItem("username", values.username);
+          sessionStorage.setItem("token", response.token);
+        }
+        console.log(response.msg);
+      })
+  };
 
   return (
     <ProConfigProvider hashed={false}>
@@ -81,8 +90,7 @@ const LoginBox: React.FC = () => {
             activeKey={loginType}
             onChange={(activeKey) => setLoginType(activeKey as LoginType)}
             items={tabItem}
-          >
-          </Tabs>
+          ></Tabs>
           {loginType === 'account' && (
             <>
               <ProFormText
@@ -144,7 +152,7 @@ const LoginBox: React.FC = () => {
                   size: 'large',
                 }}
                 placeholder={'请输入验证码'}
-                captchaTextRender={(timing, count) => {
+                captchaTextRender={(timing: any, count: any) => {
                   if (timing) {
                     return `${count} ${'获取验证码'}`;
                   }
