@@ -1,23 +1,28 @@
 const Router = require("koa-router");
 const Koa = require("koa");
-const bodyParser = require("koa-bodyparser");//使用才能解析post数据
-const cors = require('koa2-cors');
+const bodyParser = require("koa-bodyparser"); //使用才能解析post数据
+const cors = require("koa2-cors");
 
 const app = new Koa();
 const router = new Router();
 const PORT = 3030;
+const server = require("http").Server(app.callback());
 
-app.use(bodyParser()).use(cors({
-  origin:"*",
-  maxAge: 2592000,
-  credentials: true}
-));
+require("./utils/socket")(server);
 
-const authRouter = require('./routes/auth');
+app.use(bodyParser()).use(
+  cors({
+    origin: "*",
+    maxAge: 2592000,
+    credentials: true,
+  })
+);
 
-router.use('/auth',authRouter)
-app.use(router.routes()).use(router.allowedMethods())
+const authRouter = require("./routes/auth");
 
-app.listen(PORT, () => {
+router.use("/auth", authRouter);
+app.use(router.routes()).use(router.allowedMethods());
+
+server.listen(PORT, () => {
   console.log("listen on " + PORT + " ...");
 });

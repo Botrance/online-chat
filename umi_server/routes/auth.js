@@ -20,7 +20,7 @@ router.get("/test", (ctx) => {
 });
 
 router.post("/test/token", async (ctx) => {
-  console.log(ctx.request)
+  // console.log(ctx.request)
   await verify(ctx.request,ctx.response);
 });
 

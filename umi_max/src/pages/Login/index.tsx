@@ -43,7 +43,7 @@ interface loginRes {
   msg:string,
   token:string,
 }
-
+//需要添加验证码功能
 const LoginBox: React.FC = () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
 

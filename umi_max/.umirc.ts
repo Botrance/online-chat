@@ -21,14 +21,14 @@ export default defineConfig({
       component: './Home',
     },
     {
-      name: '权限演示',
-      path: '/access',
-      component: './Access',
-    },
-    {
       name: '登录页面',
       path: '/login' ,
       component: './Login',
+    },
+    {
+      name: '聊天页面',
+      path: '/chat' ,
+      component: './Chat',
     }
   ],
   npmClient: 'pnpm',

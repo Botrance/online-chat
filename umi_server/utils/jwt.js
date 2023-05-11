@@ -22,7 +22,7 @@ const verify = async (req, res) => {
 		if (error) {
 			res.body={ code: 101, msg: 'token验证失败' };
 		} else {
-			console.log(data)
+			// console.log(data)
 			res.body={ code: 100, msg: 'token验证成功' };
 		}
 	});
