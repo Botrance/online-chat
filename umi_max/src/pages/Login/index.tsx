@@ -49,7 +49,7 @@ const LoginBox: React.FC = () => {
 
   const onSubmit = async (values: loginParams) => {
     testToken();
-    request('http://localhost:3030/auth/login', {
+    request('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

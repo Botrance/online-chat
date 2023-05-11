@@ -3,7 +3,7 @@ const router = new Router(); // 使用路由模块化管理
 const crypto = require("crypto"); // 导入加密模块
 const authModel = require("../model/auth"); // 导入数据库模型
 
-const {sign,verify}=require('../tools/jwt')
+const {sign,verify}=require('../utils/jwt')
 
 const DB = require("../config/dbconfig");
 

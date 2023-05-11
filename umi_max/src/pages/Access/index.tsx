@@ -1,5 +1,7 @@
+import { testToken } from '@/services/apiTest';
 import { PageContainer } from '@ant-design/pro-components';
 import { Button } from 'antd';
+import { useState } from 'react';
 
 let authenticate = () => {
   // 获取页面中存储的token
@@ -9,6 +11,8 @@ let authenticate = () => {
 }
 
 const AccessPage: React.FC = () => {
+  const [loginState,setLoginState]=useState(false);
+  testToken();
   return (
     <PageContainer
       ghost

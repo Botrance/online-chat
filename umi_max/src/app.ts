@@ -1,5 +1,6 @@
 // 运行时配置
 import type { RequestConfig } from '@umijs/max';
+import { proxy } from '@/global/config';
 
 export const request: RequestConfig = {
   timeout: 1000,
@@ -13,8 +14,11 @@ export const request: RequestConfig = {
   requestInterceptors: [
     (config: any) => {
       const sessionToken = sessionStorage.getItem('token');
-      console.log(config)
-      if (sessionToken) return {...config,headers:{
+      const urlReg= /^\/api/;
+      let url=config.url.replace(urlReg,proxy);
+      if (sessionToken) return {...config,
+        url:url,
+        headers:{
         'Authorization': 'Bearer ' + sessionToken.toString()
       }};
       return config;
