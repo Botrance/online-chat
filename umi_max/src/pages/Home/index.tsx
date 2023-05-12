@@ -1,18 +1,23 @@
 import Guide from '@/components/Guide';
-import { trim } from '@/utils/format';
 import { PageContainer } from '@ant-design/pro-components';
-import { useModel } from '@umijs/max';
 import styles from './index.less';
+import { connect } from '@umijs/max';
+import {useEffect }from 'react';
 
-const HomePage: React.FC = () => {
+const HomePage: React.FC = ({dispatch,authModel}:any) => {
+  
+  useEffect(()=>{
+    console.log(authModel)
 
+  })
+  
   return (
     <PageContainer ghost>
       <div className={styles.container}>
-        <Guide name={'123'} />
+        <Guide name={""} />
       </div>
     </PageContainer>
   );
 };
 
-export default HomePage;
+export default connect((state: any)=>state)(HomePage);

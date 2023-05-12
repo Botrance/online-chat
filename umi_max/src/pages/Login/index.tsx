@@ -17,7 +17,8 @@ import { request } from '@umijs/max';
 import { Space, Tabs, message } from 'antd';
 import type { CSSProperties } from 'react';
 import React, { useState } from 'react';
-import {test,testToken} from '@/services/apiTest'
+import { useNavigate } from '@umijs/max';
+import { connect } from '@umijs/max';
 
 type LoginType = 'phone' | 'account';
 
@@ -46,9 +47,9 @@ interface loginRes {
 //需要添加验证码功能
 const LoginBox: React.FC = () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
-
+  const navigate = useNavigate();
   const onSubmit = async (values: loginParams) => {
-    testToken();
+    
     request('/api/auth/login', {
       method: 'POST',
       headers: {
@@ -63,6 +64,9 @@ const LoginBox: React.FC = () => {
         if(response.code===100){
           sessionStorage.setItem("username", values.username);
           sessionStorage.setItem("token", response.token);
+          navigate('/chat');
+        }else{
+          sessionStorage.removeItem('token');
         }
         console.log(response.msg);
       })
@@ -193,4 +197,4 @@ const LoginBox: React.FC = () => {
   );
 };
 
-export default LoginBox;
+export default connect((state: any)=>state)(LoginBox);

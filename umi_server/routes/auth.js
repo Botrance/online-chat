@@ -19,7 +19,7 @@ router.get("/test", (ctx) => {
   ctx.body = "<h1>test</h1>";
 });
 
-router.post("/test/token", async (ctx) => {
+router.post("/token", async (ctx) => {
   // console.log(ctx.request)
   await verify(ctx.request,ctx.response);
 });

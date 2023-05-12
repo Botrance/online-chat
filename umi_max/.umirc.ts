@@ -3,34 +3,41 @@ import { defineConfig } from '@umijs/max';
 export default defineConfig({
   antd: {},
   model: {},
-  initialState: {},
   request: {},
   dva: {},
   mock: false,
-  layout: {
-    title: '@umijs/max',
-  },
+  layout: false,
   routes: [
     {
+      name:'主页面',
       path: '/',
-      redirect: '/login',
+      component: './Main',
+      
+      routes:[
+        {
+          path:'/',
+          exact:true,
+          redirect:'/login'
+        },
+        {
+          name: '登录页面',
+          path: '/login',
+          component: './Login',
+        },
+        {
+          name: '首页',
+          path: '/home',
+          component: './Home',
+        },
+        {
+          name: '聊天页面',
+          path: '/chat',
+          component: './Chat',
+          wrappers:['@/utils/auth',],
+        },
+      ]
     },
-    {
-      name: '首页',
-      path: '/home',
-      component: './Home',
-    },
-    {
-      name: '登录页面',
-      path: '/login' ,
-      component: './Login',
-    },
-    {
-      name: '聊天页面',
-      path: '/chat' ,
-      component: './Chat',
-    }
+   
   ],
   npmClient: 'pnpm',
 });
-
