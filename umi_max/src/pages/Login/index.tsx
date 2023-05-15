@@ -43,6 +43,7 @@ interface loginRes {
   code:number,
   msg:string,
   token:string,
+  id:string,
 }
 //需要添加验证码功能
 const LoginBox: React.FC = () => {
@@ -63,6 +64,7 @@ const LoginBox: React.FC = () => {
       .then(function (response: loginRes) {
         if(response.code===100){
           sessionStorage.setItem("username", values.username);
+          sessionStorage.setItem("id", response.id);
           sessionStorage.setItem("token", response.token);
           navigate('/chat');
         }else{

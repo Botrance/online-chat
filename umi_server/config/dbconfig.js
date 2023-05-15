@@ -9,7 +9,8 @@ const DB = new Sequelize("info", "root", "asd123456", {
         min: 0, // 最小连接数量
         idle: 10000, // 如果10秒内没有被使用，释放该线程
         acquire:60000
-    }
+    },
+    timezone: '+08:00'
 })
 module.exports = DB;
  

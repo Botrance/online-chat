@@ -1,4 +1,4 @@
-import { connect, Outlet, useNavigate, withRouter } from '@umijs/max';
+import { connect, Outlet, withRouter } from '@umijs/max';
 import React from 'react';
 @connect((state: any)=>(state))
 class authView extends React.Component<any>{
@@ -8,7 +8,7 @@ class authView extends React.Component<any>{
   }
   componentWillMount(): void {
     if (!this.props.authModel.auth){
-      console.log('no')
+      console.log('no');
       history.back()
     }
   }

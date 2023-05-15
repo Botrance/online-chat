@@ -1,18 +1,11 @@
 const Router = require("koa-router");
 const router = new Router(); // 使用路由模块化管理
 const crypto = require("crypto"); // 导入加密模块
+
+const { initTable } = require("../utils/initTable");
+const { sign, verify } = require("../utils/jwt");
+
 const authModel = require("../model/auth"); // 导入数据库模型
-
-const {sign,verify}=require('../utils/jwt')
-
-const DB = require("../config/dbconfig");
-
-async function defaultTable(){
-  const tables = await DB.getQueryInterface().showAllTables();
-  if(!tables.includes('auth')){
-    await DB.getQueryInterface().createTable(authModel.tableName, authModel.getAttributes());
-  }
-}
 
 router.get("/test", (ctx) => {
   ctx.type = "html";
@@ -21,7 +14,7 @@ router.get("/test", (ctx) => {
 
 router.post("/token", async (ctx) => {
   // console.log(ctx.request)
-  await verify(ctx.request,ctx.response);
+  await verify(ctx.request, ctx.response);
 });
 
 /*
@@ -33,37 +26,62 @@ router.post("/token", async (ctx) => {
  */
 router.post("/register", async (ctx) => {
   const { request, response } = ctx;
-  let id = request.body.id;
-  let username = request.body.username; // 获取用户名
-  let password = request.body.password; // 获取密码
-  // 创建MD5对象
-  let md5 = crypto.createHash("md5");
-  // 对密码进行加密，"hex"表示密码是十六进制的字符串
-  let newPwd = md5.update(password).digest("hex");
-  // 将用户名和密码保存到数据库中
-  console.log(username, newPwd);
-  await defaultTable();
+  let { id, username, password } = request.body;
+  let isInclude = false;
+
+  await initTable("auth");
   await authModel
-    .create({
-      id: id,
-      username: username,
-      password: newPwd,
+    .findAll({
+      where: {
+        username: username,
+      },
     })
     .then((result) => {
-      // 创建成功后传递的数据
-      console.log("注册成功");
-      response.body = {
-        code: 100,
-        msg: "注册成功",
-      };
+      if (result && result.length) {
+        response.body = {
+          code: 111,
+          msg: "用户名重复",
+        };
+        isInclude = true;
+      } else {
+        let md5_id = crypto.createHash("md5");
+        id = md5_id.update(username).digest("hex");
+      }
     })
     .catch((err) => {
-      console.log("注册失败");
-      response.body = {
-        code: 101,
-        msg: "注册失败",
-      };
+      console.log(err);
     });
+  if (!isInclude) {
+    // 创建MD5对象
+    let md5 = crypto.createHash("md5");
+    // 对密码进行加密，"hex"表示密码是十六进制的字符串
+    let newPwd = md5.update(password).digest("hex");
+
+    console.log(username, newPwd);
+
+    await authModel
+      .create({
+        id: id,
+        username: username,
+        password: newPwd,
+      })
+      .then((result) => {
+        // 创建成功后传递的数据
+        console.log("注册成功");
+        response.body = {
+          code: 100,
+          msg: "注册成功",
+        };
+      })
+      .catch((err) => {
+        console.log("注册失败");
+        console.log(err);
+        response.body = {
+          code: 101,
+          msg: "注册失败",
+        };
+      });
+  }
 });
 
 /*
@@ -77,17 +95,14 @@ router.post("/register", async (ctx) => {
  */
 router.post("/login", async (ctx) => {
   const { request, response } = ctx;
-  // 在服务器端以对象的方式将用户名和密码接收
-  let user = request.body;
   // 获取对象中的用户名和密码
-  let username = user.username;
-  let password = user.password;
+  let { username, password } = request.body;
   // 创建MD5对象
   let mds = crypto.createHash("md5");
   // 对密码进行加密，密码是十六进制的字符串
   let newPwd = mds.update(password).digest("hex");
   // 查询
-  await defaultTable();
+  await initTable("auth");
   await authModel
     .findAll({
       where: {
@@ -102,12 +117,13 @@ router.post("/login", async (ctx) => {
         if (data[0].password == newPwd) {
           // 密码相同
           // 合法用户，生成token
-          // jwt.sign()传入要生成token信息的对象，其中的"jmcbp"可以让token信息更加难以破解
-          let newToken = sign({ ...data[0]});
+          // jwt.sign()传入要生成token信息的对象
+          let newToken = sign({ ...data[0] });
           // 将token和其他信息打包后相应给客户端
           console.log("登录成功");
           response.body = {
             code: 100,
+            id: data[0].id,
             msg: "登录成功",
             token: newToken,
           };
@@ -130,4 +146,5 @@ router.post("/login", async (ctx) => {
     });
 });
 
+//还需要一个更换密码
 module.exports = router.routes();

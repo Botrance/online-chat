@@ -4,9 +4,8 @@ const Sequelize = require("sequelize");
 
 const authModel = DB.define("auth", { // "auth"是info数据库下的表，第一个参数是表名
     id: { // id与数据库中的列名保持一致
-        type: Sequelize.INTEGER, // int类型
+        type: Sequelize.STRING(127), // int类型
         primaryKey: true, // 主键
-        autoIncrement: true, // 自动增长
         unique: true // 唯一的键
     },
     username: { // username与数据库中的列名保持一致
@@ -19,7 +18,7 @@ const authModel = DB.define("auth", { // "auth"是info数据库下的表，第�
     }
 }, {
     freezeTableName: true, // 使用自定义表名
-    timestamps: false // 不使用时间戳
+    timestamps: true // 使用时间戳
 })
 
 module.exports = authModel; // 导出该模块

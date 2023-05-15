@@ -1,7 +1,7 @@
 import { connect } from '@umijs/max';
 import { history,Outlet } from '@umijs/max';
 import {useEffect, useState} from 'react';
-
+import styles from './index.less'
 const MainPage: React.FC = ({dispatch,authModel}:any) => {
 
   const [auth,setAuth]=useState(false);
@@ -13,10 +13,12 @@ const MainPage: React.FC = ({dispatch,authModel}:any) => {
   })
 
   return (
-    <>
-      <Outlet/>
-      {`权限${auth}`}
-    </>
+    <div className={styles['main-area']}>
+      <div className={styles['main-fit']}>
+        <Outlet/>
+      </div>
+      {/* {`权限${auth}`} */}
+    </div>
     
   );
 };

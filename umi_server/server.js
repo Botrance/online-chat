@@ -19,8 +19,9 @@ app.use(bodyParser()).use(
 );
 
 const authRouter = require("./routes/auth");
-
+const chatRouter = require("./routes/chat");
 router.use("/auth", authRouter);
+router.use("/chat", chatRouter);
 app.use(router.routes()).use(router.allowedMethods());
 
 server.listen(PORT, () => {
