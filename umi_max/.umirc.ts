@@ -9,15 +9,15 @@ export default defineConfig({
   layout: false,
   routes: [
     {
-      name:'主页面',
+      name: '主页面',
       path: '/',
       component: './Main',
-      
-      routes:[
+
+      routes: [
         {
-          path:'/',
-          exact:true,
-          redirect:'/login'
+          path: '/',
+          exact: true,
+          redirect: '/login',
         },
         {
           name: '登录页面',
@@ -33,11 +33,10 @@ export default defineConfig({
           name: '聊天页面',
           path: '/chat',
           component: './Chat',
-          wrappers:['@/utils/auth',],
+          wrappers: ['@/utils/auth'],
         },
-      ]
+      ],
     },
-   
   ],
   npmClient: 'pnpm',
 });

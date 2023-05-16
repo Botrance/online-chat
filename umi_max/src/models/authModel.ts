@@ -1,4 +1,4 @@
-import { authToken } from "@/services/apiTest";
+import { authToken } from '@/services/apiTest';
 
 export default {
   namespace: 'authModel',
@@ -16,8 +16,8 @@ export default {
   },
 
   effects: {
-    *getAuth({ payload }:any, { call, put }:any) {
-      const data:boolean = yield call(authToken , payload);
+    *getAuth({ payload }: any, { call, put }: any) {
+      const data: boolean = yield call(authToken, payload);
       yield put({
         type: 'updateState',
         payload: {
@@ -28,14 +28,14 @@ export default {
   },
 
   subscriptions: {
-		sendAjax({ dispatch, history }:any) {
-			history.listen(({pathname}:any) => {
-				if (pathname !== '/login' && pathname !== '/') {
-					dispatch({
-						type: 'getAuth',
-					});
-				}
-			})
-		},
-	},
+    sendAjax({ dispatch, history }: any) {
+      history.listen(({ pathname }: any) => {
+        if (pathname !== '/login' && pathname !== '/') {
+          dispatch({
+            type: 'getAuth',
+          });
+        }
+      });
+    },
+  },
 };

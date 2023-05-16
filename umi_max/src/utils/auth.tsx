@@ -1,22 +1,20 @@
-import { connect, Outlet, withRouter } from '@umijs/max';
+import { connect, Outlet } from '@umijs/max';
 import React from 'react';
-@connect((state: any)=>(state))
-class authView extends React.Component<any>{
-
-  constructor(props:any) {
+@connect((state: any) => state)
+class authView extends React.Component<any> {
+  constructor(props: any) {
     super(props);
   }
   componentWillMount(): void {
-    if (!this.props.authModel.auth){
+    if (!this.props.authModel.auth) {
       console.log('no');
-      history.back()
+      history.back();
     }
   }
 
   render(): React.ReactNode {
-    return <Outlet/>
+    return <Outlet />;
   }
-
-};
+}
 
 export default authView;

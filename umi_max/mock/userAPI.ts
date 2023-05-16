@@ -11,9 +11,9 @@ export default {
       errorCode: 0,
     });
   },
-  'POST /api/v1/login':(req: any, res: any) => {
+  'POST /api/v1/login': (req: any, res: any) => {
     res.json({
-      success:true
+      success: true,
     });
   },
   'PUT /api/v1/user/': (req: any, res: any) => {

@@ -5,29 +5,29 @@ const messageModel = DB.define(
   "message",
   {
     // "message"是info数据库下的表，第一个参数是表名
-    
+
     id: {
       type: Sequelize.STRING(127), // string类型
       primaryKey: true,
-      allowNull:false,
+      allowNull: false,
     },
     user_sender: {
       type: Sequelize.STRING(30), // string类型
-      allowNull:false
+      allowNull: false,
     },
     user_receiver: {
       type: Sequelize.STRING(30), // string类型
-      allowNull:false
+      allowNull: false,
     },
     message: {
       type: Sequelize.STRING(1023),
-      allowNull:false
+      allowNull: false,
     },
-    timestamp:{
+    timestamp: {
       primaryKey: true,
       type: Sequelize.DATE,
-      allowNull:false
-    }
+      allowNull: false,
+    },
   },
   {
     freezeTableName: true, // 使用自定义表名

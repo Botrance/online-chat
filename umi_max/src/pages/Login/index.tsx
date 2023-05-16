@@ -13,12 +13,10 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { request } from '@umijs/max';
+import { connect, request, useNavigate } from '@umijs/max';
 import { Space, Tabs, message } from 'antd';
 import type { CSSProperties } from 'react';
 import React, { useState } from 'react';
-import { useNavigate } from '@umijs/max';
-import { connect } from '@umijs/max';
 
 type LoginType = 'phone' | 'account';
 
@@ -40,17 +38,16 @@ interface loginParams {
   password: string;
 }
 interface loginRes {
-  code:number,
-  msg:string,
-  token:string,
-  id:string,
+  code: number;
+  msg: string;
+  token: string;
+  id: string;
 }
 //需要添加验证码功能
 const LoginBox: React.FC = () => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
   const onSubmit = async (values: loginParams) => {
-    
     request('/api/auth/login', {
       method: 'POST',
       headers: {
@@ -60,18 +57,17 @@ const LoginBox: React.FC = () => {
         username: values.username,
         password: values.password,
       },
-    })
-      .then(function (response: loginRes) {
-        if(response.code===100){
-          sessionStorage.setItem("username", values.username);
-          sessionStorage.setItem("id", response.id);
-          sessionStorage.setItem("token", response.token);
-          navigate('/chat');
-        }else{
-          sessionStorage.removeItem('token');
-        }
-        console.log(response.msg);
-      })
+    }).then(function (response: loginRes) {
+      if (response.code === 100) {
+        sessionStorage.setItem('username', values.username);
+        sessionStorage.setItem('id', response.id);
+        sessionStorage.setItem('token', response.token);
+        navigate('/chat');
+      } else {
+        sessionStorage.removeItem('token');
+      }
+      console.log(response.msg);
+    });
   };
 
   return (
@@ -199,4 +195,4 @@ const LoginBox: React.FC = () => {
   );
 };
 
-export default connect((state: any)=>state)(LoginBox);
+export default connect((state: any) => state)(LoginBox);
