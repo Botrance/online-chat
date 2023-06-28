@@ -29,9 +29,14 @@ export const authToken = async () => {
     headers: {
       'Content-Type': 'application/json',
     },
-  }).then(function (response: any) {
-    console.log(response.msg);
-    return response.code === 100;
-  });
+  })
+    .then(function (response: any) {
+      console.log(response.msg);
+      return response.code === 100;
+    })
+    .catch((reason) => {
+      console.log(reason);
+      return false;
+    });
   if (result) return result;
 };

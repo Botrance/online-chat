@@ -1,6 +1,7 @@
 // 运行时配置
 import { proxy } from '@/global/config';
 import type { RequestConfig } from '@umijs/max';
+import { authToken } from './services/apiTest';
 
 export const request: RequestConfig = {
   timeout: 1000,

@@ -44,7 +44,7 @@ interface loginRes {
   id: string;
 }
 //需要添加验证码功能
-const LoginBox: React.FC = () => {
+const LoginBox: React.FC = ({ dispatch, authModel,socketModel }: any) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
   const onSubmit = async (values: loginParams) => {
@@ -57,11 +57,13 @@ const LoginBox: React.FC = () => {
         username: values.username,
         password: values.password,
       },
-    }).then(function (response: loginRes) {
+    }).then(async function (response: loginRes) {
       if (response.code === 100) {
         sessionStorage.setItem('username', values.username);
         sessionStorage.setItem('id', response.id);
         sessionStorage.setItem('token', response.token);
+        await dispatch({type: 'authModel/loginSuccess'})
+        await dispatch({type:'socketModel/loginSuccess'})
         navigate('/chat');
       } else {
         sessionStorage.removeItem('token');

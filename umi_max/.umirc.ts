@@ -5,8 +5,10 @@ export default defineConfig({
   model: {},
   request: {},
   dva: {},
+  mfsu:{},
   mock: false,
   layout: false,
+  exportStatic:{},
   routes: [
     {
       name: '主页面',

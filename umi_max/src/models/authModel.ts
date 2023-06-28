@@ -8,9 +8,19 @@ export default {
 
   reducers: {
     updateState(state: any, { payload }: any) {
+      if (state.auth !== payload.auth) {
+        return {
+          ...state,
+          ...payload,
+        };
+      }
+      return state;
+    },
+    loginSuccess(state: any) {
+      console.log('success');
       return {
         ...state,
-        ...payload,
+        auth: true,
       };
     },
   },
@@ -27,15 +37,13 @@ export default {
     },
   },
 
-  subscriptions: {
-    sendAjax({ dispatch, history }: any) {
-      history.listen(({ pathname }: any) => {
-        if (pathname !== '/login' && pathname !== '/') {
-          dispatch({
-            type: 'getAuth',
-          });
-        }
-      });
-    },
-  },
+  // subscriptions: {
+  //   sendAjax({ dispatch, history }: any) {
+  //     history.listen(({ pathname }: any) => {
+  //       dispatch({
+  //         type: 'getAuth',
+  //       });
+  //     });
+  //   },
+  // },
 };

@@ -12,15 +12,12 @@ const roomModel = DB.define(
       primaryKey: true, // 主键
       unique: true, // 唯一的键
     },
-    username: {
-      // username与数据库中的列名保持一致
-      type: Sequelize.STRING(30), // string类型
-      allowNull: false, // 不允许为空
+    users: {
+      type: Sequelize.JSON, // Json类型
     },
     timestamp: {
       primaryKey: true,
       type: Sequelize.DATE,
-      allowNull: false,
     },
   },
   {

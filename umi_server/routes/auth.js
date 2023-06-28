@@ -44,8 +44,8 @@ router.post("/register", async (ctx) => {
         };
         isInclude = true;
       } else {
-        let md5_id = crypto.createHash("md5");
-        id = md5_id.update(username).digest("hex");
+        let uuid_id = crypto.randomUUID();
+        id = username + ":" + uuid_id;// 防止出现的极小概率重复
       }
     })
     .catch((err) => {

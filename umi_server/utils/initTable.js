@@ -1,10 +1,11 @@
 const messageModel = require("../model/message"); // 导入数据库模型
 const authModel = require("../model/auth"); // 导入数据库模型
+const roomModel = require("../model/room");
 
-const models={auth:authModel,message:messageModel}
+const models = { auth: authModel, message: messageModel, room: roomModel };
 const DB = require("../config/dbconfig");
 
-const initTable=async function(name){
+const initTable = async function (name) {
   const tables = await DB.getQueryInterface().showAllTables();
   if (!tables.includes(name)) {
     await DB.getQueryInterface().createTable(
@@ -12,9 +13,9 @@ const initTable=async function(name){
       models[name].getAttributes()
     );
   }
-}
+};
 
-module.exports ={
+module.exports = {
   initTable,
-  models
-}
+  models,
+};
