@@ -1,81 +1,83 @@
 import { ProForm, ProFormTextArea } from '@ant-design/pro-components';
 import { connect } from '@umijs/max';
 import { useEffect, useState } from 'react';
-import styles from './index.less';
 
-const ChatPage: React.FC = ({ dispatch, authModel, socketModel }: any) => {
+import './index.less';
+
+const ChatPage: React.FC = ({ dispatch, socketModel, infoModel }: any) => {
   // 绑定监听, 接收服务器发送的消息
-  const socket = socketModel.socket;
   const username = sessionStorage.getItem('username');
   const id = sessionStorage.getItem('id');
 
-  const [users, setUsers] = useState<string[]>([]);
-
-  // const a = socket.emit('roomConnect', {
-  //   username: username,
-  //   time: Date.now(),
-  // });
-  if (socket) {
-    socket.on('users', function (data: any) {
-      console.log('客户端接收服务器发送的消息', data);
-      data?.forEach((x: string) => {
-        users.push(x);
-      });
-      console.log(users);
-    });
-
-    socket.on('resCode', function (data: any) {
-      console.log('客户端接收服务器发送的消息', data);
-    });
-
-    socket.on('receiveMsg', function (data: any) {
-      console.log('客户端接收服务器发送的消息', data);
-    });
-  }
+  const [messages, setMessages] = useState<string[]>([]);
 
   useEffect(() => {
-    // componentDidMount
-    let chatbox: HTMLElement = document.getElementById(
-      'chat-box',
-    ) as HTMLElement;
-    let textarea: HTMLTextAreaElement = chatbox.querySelector(
-      'textarea',
-    ) as HTMLTextAreaElement;
-    textarea.style.resize = 'none';
+    const socket = socketModel.socket;
+    if (!socket) {
+      dispatch({ type: 'socketModel/connect' });
+    } else {
+      dispatch({ type: 'infoModel/getFriends' });
+      dispatch({ type: 'infoModel/getRooms' });
+    }
 
     return () => {
+      const socket = socketModel.socket;
       if (socket) {
-        // componentWillUnmount
-        socket.off('resCode');
-        socket.off('receiveMsg');
-        socket.off('users');
+        dispatch({ type: 'socketModel/close' });
       }
     };
-  });
+  }, [dispatch, socketModel.socket]);
+
+  useEffect(() => {
+    const socket = socketModel.socket;
+
+    const preSetMessage = (newMessage: string) => {
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      console.log(newMessage);
+    };
+
+    if (socket) {
+      socket.on('message', preSetMessage);
+      socket.emit('joinRoom', { username: username, othername: 'Botrance' });
+      socket.on(
+        'resMsg',
+        (response: { success: any; roomId?: any; message: any }) => {
+          console.log(response);
+        },
+      );
+    }
+
+    return () => {
+      const socket = socketModel.socket;
+      if (socket) {
+        socket.off('message', preSetMessage);
+      }
+    };
+  }, [dispatch, socketModel.socket]);
 
   const ioEmit = async (values: { text: string | undefined }) => {
+    const socket = socketModel.socket;
     // 发送消息
     if (values.text) {
       const data = {
-        id: id,
         message: values.text,
-        user_sender: username,
-        user_receiver: 'Botrance',
-        time: Date.now(),
+        username: username,
+        roomId: '8d7b820ff3fd4fc418ff806063bdcb53',
       };
-      socket.emit('sendMsg', data);
-      console.log('客户端向服务器发消息', data);
+      socket.emit('sendMessage', data);
+      console.log(`message from ${username} to ${'Botrance'}`, data);
     }
   };
 
   return (
     <>
       <ProForm onFinish={ioEmit}>
-        <div id="chat-box" className={styles['chat-box']}>
+        <div id="chat-box" className="chat-box">
           <ProFormTextArea name="text"></ProFormTextArea>
         </div>
       </ProForm>
     </>
   );
 };
+
 export default connect((state: any) => state)(ChatPage);

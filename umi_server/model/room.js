@@ -1,28 +1,44 @@
 const DB = require("../config/dbconfig"); // 导入数据库配置文件
-
+const { DataTypes } = require("sequelize");
 const Sequelize = require("sequelize");
 
 const roomModel = DB.define(
   "room",
   {
-    // "auth"是info数据库下的表，第一个参数是表名
-    roomid: {
+    roomId: {
       // id与数据库中的列名保持一致
-      type: Sequelize.STRING(127), // int类型
+      type: Sequelize.STRING(64),
       primaryKey: true, // 主键
       unique: true, // 唯一的键
+      allowNull: false,
+    },
+    roomName: {
+      type: Sequelize.STRING(64),
+      allowNull: true,
+    },
+    roomType: {
+      type: Sequelize.STRING(32),
+      allowNull: false, //private,public
     },
     users: {
-      type: Sequelize.JSON, // Json类型
-    },
-    timestamp: {
-      primaryKey: true,
-      type: Sequelize.DATE,
+      type: DataTypes.STRING(1024),
+      allowNull: false,
+      get() {
+        const value = this.getDataValue("users");
+        return value ? value.split(",") : [];
+      },
+      set(value) {
+        if (Array.isArray(value)) {
+          this.setDataValue("users", value.join(","));
+        } else {
+          this.setDataValue("users", value);
+        }
+      },
     },
   },
   {
     freezeTableName: true, // 使用自定义表名
-    timestamps: false, // 使用时间戳
+    timestamps: false, // 不使用时间戳
   }
 );
 

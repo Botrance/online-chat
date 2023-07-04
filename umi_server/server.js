@@ -8,6 +8,8 @@ const router = new Router();
 const PORT = 3030;
 const server = require("http").Server(app.callback());
 
+const { initTable } = require("./utils/initTable");
+
 require("./utils/socket")(server);
 
 app.use(bodyParser()).use(
@@ -17,6 +19,10 @@ app.use(bodyParser()).use(
     credentials: true,
   })
 );
+
+initTable("auth");
+initTable('room');
+initTable('message');
 
 const authRouter = require("./routes/auth");
 const chatRouter = require("./routes/chat");

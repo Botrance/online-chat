@@ -6,9 +6,8 @@ export default {
   state: {
     socket: null,
   },
-
   reducers: {
-    loginSuccess(state:any){
+    connect(state:any){
       console.log("socket connect success")
       return{
         ...state,
@@ -17,7 +16,9 @@ export default {
     },
     close(state:any){
       console.log("socket connect close")
-      state.socket.close();
+      if(state.socket){
+        state.socket.close();
+      }
       return{
         ...state,
         socket:null,

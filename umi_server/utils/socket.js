@@ -1,148 +1,128 @@
+const crypto = require("crypto"); // 导入加密模块
 const authModel = require("../model/auth");
 const messageModel = require("../model/message");
 const roomModel = require("../model/room");
 
-const { initTable } = require("../utils/initTable");
+const { Op } = require("sequelize");
+
+// 生成 32 位随机字符串作为 roomId
+function generateRandomId() {
+  const randomBytes = crypto.randomBytes(16);
+  const roomId = randomBytes.toString("hex");
+  return roomId;
+}
 
 module.exports = function (server) {
   const io = require("socket.io")(server, { cors: true });
 
-  io.on("connection", function (socket) {
+  io.on("connection", (socket) => {
     console.log("有一个客户端连接上了服务器");
-    
-    const users = [];
-    for (let [id, socket] of io.of("/").sockets) {
-      users.push({
-        userID: id,
-        username: socket.username,
-      });
-    }
-    socket.emit("users", users);
 
-    // socket.on("roomConnect", async function (data) {
-    //   const { roomid, username, time } = data;
-    //   let isInclude = false;
-    //   // if (roomid) {
-    //   //   await initTable("room")
-    //   //   await roomModel
-    //   //     .findAll({
-    //   //       where: {
-    //   //         roomid: roomid,
-    //   //       },
-    //   //     })
-    //   //     .then((data) => {
-    //   //       if (data && data.length) {
-    //   //         isInclude = true;
-    //   //       } else {
-    //   //         console.log("房间不存在");
-    //   //         io.emit("resCode", {
-    //   //           apiName: "roomConnect",
-    //   //           code: 110,
-    //   //           msg: "房间不存在",
-    //   //         });
-    //   //       }
-    //   //     })
-    //   //     .catch((err) => {
-    //   //       console.log("房间查找失败");
-    //   //       console.log(err);
-    //   //       io.emit("resCode", {
-    //   //         apiName: "roomConnect",
-    //   //         code: 101,
-    //   //         msg: "房间查找失败",
-    //   //       });
-    //   //     });
-    //   // }
-
-    //   if (!isInclude) {
-    //     const id = roomid ? roomid : 0;
-    //   }
-
-    //   await socket.join(roomid);
-    //   socket.to(roomid).emit("resCode", {
-    //     apiName: "roomConnect",
-    //     data: {},
-    //     code: 100,
-    //     msg: "连接成功",
-    //   });
-
-    // });
-
-    socket.on("sendMsg", async function (data) {
-      console.log("服务器接收到客户端发送的消息", data);
-  
-      const { id = "", message = "", user_sender, user_receiver, time ,roomid } = data;
-      let isInclude = false;
-      await initTable("auth");
-      await authModel
-        .findAll({
-          where: {
-            // 查找用户名
-            id: id,
-            username: user_sender,
-          },
-        })
-        .then((data) => {
-          if (data && data.length) {
-            isInclude = true;
+    // 加入房间
+    socket.on("joinRoom", async ({ roomId, username, othername }) => {
+      try {
+        if (roomId) {
+          // 根据 roomId 加入房间
+          const room = await roomModel.findOne({ where: { roomId } });
+          if (room) {
+            socket.join(room.roomId);
+            console.log(`User ${username} joined room ${room.roomId}`);
+            socket.emit("resMsg", {
+              success: true,
+              message: "joinRoom success",
+            });
           } else {
-            console.log("用户不存在");
-  
-            io.emit("resCode", {
-              apiName: "sendMsg",
-              code: 110,
-              msg: "用户不存在",
+            console.log(`Room ${roomId} does not exist.`);
+            socket.emit("resMsg", {
+              success: false,
+              message: `Room ${roomId} does not exist.`,
             });
           }
-        })
-        .catch((err) => {
-          console.log("用户查找失败");
-          console.log(err);
-          io.emit("resCode", {
-            apiName: "sendMsg",
-            code: 101,
-            msg: "用户查找失败",
+        } else if (othername) {
+          // 查询符合条件的房间
+          const room = await roomModel.findOne({
+            where: {
+              [Op.and]: [
+                { users: { [Op.like]: `%${username}%` } },
+                { users: { [Op.like]: `%${othername}%` } },
+              ],
+              roomType: "private",
+            },
           });
-        });
-  
-      if (isInclude) {
-        await initTable("message");
-        await messageModel
-          .create({
-            id: id,
-            user_sender: user_sender,
-            user_receiver: user_receiver,
-            message: message,
-            timestamp: time,
-          })
-          .then((result) => {
-            // 创建成功后传递的数据
-            console.log("消息发送成功");
-            io.emit("resCode", {
-              apiName: "sendMsg",
-              code: 100,
-              msg: "消息发送成功",
+
+          if (room) {
+            socket.join(room.roomId);
+            console.log(
+              `User ${username} joined private chat room ${room.roomId}`
+            );
+            socket.emit("resMsg", {
+              success: true,
+              message: "joinRoom success",
             });
-          })
-          .catch((err) => {
-            console.log("消息发送失败");
-            console.log(err);
-            io.emit("resCode", {
-              apiName: "sendMsg",
-              code: 101,
-              msg: "消息发送失败",
+          } else {
+            // 创建新房间
+            const newRoom = await roomModel.create({
+              roomId: generateRandomId(),
+              users: [username, othername],
+              roomType: "private",
             });
+
+            socket.join(newRoom.roomId);
+            console.log(
+              `New private chat room ${newRoom.roomId} created and joined by ${username}`
+            );
+            socket.emit("resMsg", {
+              success: true,
+              roomId: newRoom.roomId,
+              message: "createRoom and joinRoom success",
+            });
+          }
+        } else {
+          console.log("Invalid joinRoom request.");
+          socket.emit("resMsg", {
+            success: false,
+            message: "Invalid joinRoom request.",
           });
+        }
+      } catch (error) {
+        console.error(error);
+        socket.emit("resMsg", { success: false, message: "Server error." });
       }
-
-      // socket.leave(roomid);
     });
-    
-    socket.on("roomLeave",async function (data){
-      const { roomid, time } = data;
-      socket.leave(roomid);
-      socket.off("sendMsg");
-    })
 
+    // 发送消息
+    socket.on("sendMessage", async ({ roomId, username, message }) => {
+      try {
+        if (roomId) {
+          // 创建消息记录
+          const newMessage = await messageModel.create({
+            id: generateRandomId(),
+            roomId: roomId,
+            sender: username,
+            message: message,
+            timestamp: new Date().getTime(),
+          });
+
+          // 在房间内广播消息
+          io.to(roomId).emit("message", newMessage);
+        } else {
+          console.log("Invalid sendMessage request. RoomId is missing.");
+          socket.emit("resMsg", {
+            success: false,
+            message: "Invalid sendMessage request. RoomId is missing.",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        socket.emit("resMsg", { success: false, message: "Server error." });
+      }
+    });
+
+    // 离开房间
+    socket.on("leaveRoom", ({ roomId }) => {
+      socket.leave(roomId);
+      console.log(`User ${username} left room ${roomId}`);
+      socket.emit("resMsg", { success: true, message: "leaveRoom success." });
+    });
   });
-
 };

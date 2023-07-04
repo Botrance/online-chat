@@ -37,13 +37,10 @@ export default {
     },
   },
 
-  // subscriptions: {
-  //   sendAjax({ dispatch, history }: any) {
-  //     history.listen(({ pathname }: any) => {
-  //       dispatch({
-  //         type: 'getAuth',
-  //       });
-  //     });
-  //   },
-  // },
+  subscriptions: {
+    setup({ dispatch }: any) {
+      // 在初始化时调用 getAuth 方法
+      dispatch({ type: 'getAuth' });
+    },
+  },
 };

@@ -4,10 +4,7 @@ import { connect } from '@umijs/max';
 import { useEffect } from 'react';
 import styles from './index.less';
 
-const HomePage: React.FC = ({ dispatch, authModel }: any) => {
-  useEffect(() => {
-    console.log(authModel);
-  });
+const HomePage: React.FC = () => {
 
   return (
     <PageContainer ghost>
@@ -18,4 +15,4 @@ const HomePage: React.FC = ({ dispatch, authModel }: any) => {
   );
 };
 
-export default connect((state: any) => state)(HomePage);
+export default HomePage;

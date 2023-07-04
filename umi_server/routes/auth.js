@@ -2,7 +2,6 @@ const Router = require("koa-router");
 const router = new Router(); // 使用路由模块化管理
 const crypto = require("crypto"); // 导入加密模块
 
-const { initTable } = require("../utils/initTable");
 const { sign, verify } = require("../utils/jwt");
 
 const authModel = require("../model/auth"); // 导入数据库模型
@@ -26,10 +25,10 @@ router.post("/token", async (ctx) => {
  */
 router.post("/register", async (ctx) => {
   const { request, response } = ctx;
-  let { id, username, password } = request.body;
-  let isInclude = false;
+  let { username, password } = request.body;
 
-  await initTable("auth");
+  let id = " "
+  let isInclude = false;
   await authModel
     .findAll({
       where: {
@@ -45,7 +44,7 @@ router.post("/register", async (ctx) => {
         isInclude = true;
       } else {
         let uuid_id = crypto.randomUUID();
-        id = username + ":" + uuid_id;// 防止出现的极小概率重复
+        id = username + ":" + uuid_id; // 防止出现的极小概率重复
       }
     })
     .catch((err) => {
@@ -102,7 +101,6 @@ router.post("/login", async (ctx) => {
   // 对密码进行加密，密码是十六进制的字符串
   let newPwd = mds.update(password).digest("hex");
   // 查询
-  await initTable("auth");
   await authModel
     .findAll({
       where: {
