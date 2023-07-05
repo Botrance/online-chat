@@ -4,7 +4,7 @@ const crypto = require("crypto"); // 导入加密模块
 
 const { sign, verify } = require("../utils/jwt");
 
-const authModel = require("../model/auth"); // 导入数据库模型
+const userModel = require("../model/user"); // 导入数据库模型
 
 router.get("/test", (ctx) => {
   ctx.type = "html";
@@ -17,7 +17,7 @@ router.post("/token", async (ctx) => {
 });
 
 /*
- * 注册：http://localhost:3030/auth/register
+ * 注册：http://localhost:3030/user/register
  * 步骤如下：
  * （1）获取用户的用户名和密码
  * （2）创建MD5摘要算法的对象，利用该对象对密码进行加密
@@ -29,7 +29,7 @@ router.post("/register", async (ctx) => {
 
   let id = " "
   let isInclude = false;
-  await authModel
+  await userModel
     .findAll({
       where: {
         username: username,
@@ -58,7 +58,7 @@ router.post("/register", async (ctx) => {
 
     console.log(username, newPwd);
 
-    await authModel
+    await userModel
       .create({
         id: id,
         username: username,
@@ -101,7 +101,7 @@ router.post("/login", async (ctx) => {
   // 对密码进行加密，密码是十六进制的字符串
   let newPwd = mds.update(password).digest("hex");
   // 查询
-  await authModel
+  await userModel
     .findAll({
       where: {
         // 查找用户名

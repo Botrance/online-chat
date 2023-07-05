@@ -1,5 +1,5 @@
 const crypto = require("crypto"); // 导入加密模块
-const authModel = require("../model/auth");
+const userModel = require("../model/user");
 const messageModel = require("../model/message");
 const roomModel = require("../model/room");
 
@@ -63,6 +63,7 @@ module.exports = function (server) {
             // 创建新房间
             const newRoom = await roomModel.create({
               roomId: generateRandomId(),
+              roomName: `${username} & ${othername}`,
               users: [username, othername],
               roomType: "private",
             });
@@ -104,7 +105,7 @@ module.exports = function (server) {
           });
 
           // 在房间内广播消息
-          io.to(roomId).emit("message", newMessage);
+          io.to(roomId).emit("message", { updateMsg: "newMsg" });
         } else {
           console.log("Invalid sendMessage request. RoomId is missing.");
           socket.emit("resMsg", {
