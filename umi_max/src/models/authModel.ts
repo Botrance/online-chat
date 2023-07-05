@@ -1,13 +1,31 @@
 import { authToken } from '@/services/apiTest';
+import { Effect, Reducer, Subscription } from '@umijs/max';
+interface AuthModelState {
+  auth: boolean;
+}
 
-export default {
+interface AuthModelType {
+  namespace: 'authModel';
+  state: AuthModelState;
+  reducers: {
+    updateState: Reducer<AuthModelState>;
+    loginSuccess: Reducer<AuthModelState>;
+  };
+  effects: {
+    getAuth: Effect;
+  };
+  subscriptions: {
+    setup: Subscription;
+  };
+}
+
+const AuthModel: AuthModelType = {
   namespace: 'authModel',
   state: {
     auth: false,
   },
-
   reducers: {
-    updateState(state: any, { payload }: any) {
+    updateState(state, { payload }) {
       if (state.auth !== payload.auth) {
         return {
           ...state,
@@ -16,7 +34,7 @@ export default {
       }
       return state;
     },
-    loginSuccess(state: any) {
+    loginSuccess(state) {
       console.log('success');
       return {
         ...state,
@@ -24,9 +42,8 @@ export default {
       };
     },
   },
-
   effects: {
-    *getAuth({ payload }: any, { call, put }: any) {
+    *getAuth({ payload }, { call, put }) {
       const data: boolean = yield call(authToken, payload);
       yield put({
         type: 'updateState',
@@ -36,11 +53,12 @@ export default {
       });
     },
   },
-
   subscriptions: {
-    setup({ dispatch }: any) {
+    setup({ dispatch }) {
       // 在初始化时调用 getAuth 方法
       dispatch({ type: 'getAuth' });
     },
   },
 };
+
+export default AuthModel;

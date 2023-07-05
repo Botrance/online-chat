@@ -1,29 +1,44 @@
-import { ws_proxy } from "@/global/config";
-import { Socket, io } from "socket.io-client";
+import { ws_proxy } from '@/global/config';
+import { Reducer } from '@umijs/max';
+import { Socket, io } from 'socket.io-client';
 
-export default {
+interface SocketModelState {
+  socket: Socket | null;
+}
+
+interface SocketModelType {
+  namespace: 'socketModel';
+  state: SocketModelState;
+  reducers: {
+    connect: Reducer<SocketModelState>;
+    close: Reducer<SocketModelState>;
+  };
+}
+
+const SocketModel: SocketModelType = {
   namespace: 'socketModel',
   state: {
     socket: null,
   },
   reducers: {
-    connect(state:any){
-      console.log("socket connect success")
-      return{
+    connect(state) {
+      console.log('socket connect success');
+      return {
         ...state,
-        socket:io(ws_proxy),
-      }
+        socket: io(ws_proxy) as Socket,
+      };
     },
-    close(state:any){
-      console.log("socket connect close")
-      if(state.socket){
+    close(state) {
+      console.log('socket connect close');
+      if (state.socket) {
         state.socket.close();
       }
-      return{
+      return {
         ...state,
-        socket:null,
-      }
-    }
+        socket: null,
+      };
+    },
   },
-
 };
+
+export default SocketModel;
