@@ -59,7 +59,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
           });
         }
       });
-      socket.emit('joinRoom', { username: username, othername: 'Botrance' });
+      socket.emit('joinRoom', { username: username, roomId: '8d7b820ff3fd4fc418ff806063bdcb53', });
       socket.on(
         'resMsg',
         (response: { success: boolean; roomId?: string; message: string }) => {

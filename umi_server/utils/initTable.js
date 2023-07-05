@@ -7,7 +7,7 @@ const models = {
   user: userModel,
   message: messageModel,
   room: roomModel,
-  userRoom: UserRoomModel,
+  UserRoom: UserRoomModel,
 };
 const { DataTypes } = require("sequelize");
 

@@ -12,23 +12,39 @@ router.get("/test", (ctx) => {
 });
 
 router.post("/token", async (ctx) => {
-  // console.log(ctx.request)
   await verify(ctx.request, ctx.response);
 });
 
-/*
- * 注册：http://localhost:3030/user/register
- * 步骤如下：
- * （1）获取用户的用户名和密码
- * （2）创建MD5摘要算法的对象，利用该对象对密码进行加密
- * （3）将加密后的密码保存到数据库中
- */
 router.post("/register", async (ctx) => {
   const { request, response } = ctx;
   let { username, password } = request.body;
 
-  let id = " "
+  let id = "";
   let isInclude = false;
+  let retryCount = 0;
+  const maxRetries = 3;
+
+  const generateUniqueUUID = async () => {
+    let uuid_id = crypto.randomUUID();
+    const existingUser = await userModel.findOne({
+      where: {
+        id: uuid_id,
+      },
+    });
+    if (existingUser) {
+      if (retryCount >= maxRetries) {
+        response.body = {
+          code: 101,
+          msg: "Register failed, something wrong , plaese retry!",
+        };
+        throw new Error("Failed to generate a unique UUID.");
+      }
+      retryCount++;
+      return generateUniqueUUID();
+    }
+    return uuid_id;
+  };
+
   await userModel
     .findAll({
       where: {
@@ -38,60 +54,54 @@ router.post("/register", async (ctx) => {
     .then((result) => {
       if (result && result.length) {
         response.body = {
-          code: 111,
-          msg: "用户名重复",
+          code: 110,
+          msg: "Username cannot be same",
         };
         isInclude = true;
       } else {
-        let uuid_id = crypto.randomUUID();
-        id = username + ":" + uuid_id; // 防止出现的极小概率重复
+        return generateUniqueUUID();
+      }
+    })
+    .then((uuid_id) => {
+      if (!isInclude) {
+        id = uuid_id;
+
+        // 创建MD5对象
+        let md5 = crypto.createHash("md5");
+        // 对密码进行加密，"hex"表示密码是十六进制的字符串
+        let newPwd = md5.update(password).digest("hex");
+
+        console.log(username, newPwd);
+
+        return userModel.create({
+          id: id,
+          username: username,
+          password: newPwd,
+        });
+      }
+    })
+    .then((result) => {
+      if (result) {
+        // 创建成功后传递的数据
+        console.log("Register success");
+        response.body = {
+          code: 100,
+          msg: "Register success",
+        };
       }
     })
     .catch((err) => {
+      console.log("Register failed");
       console.log(err);
-    });
-  if (!isInclude) {
-    // 创建MD5对象
-    let md5 = crypto.createHash("md5");
-    // 对密码进行加密，"hex"表示密码是十六进制的字符串
-    let newPwd = md5.update(password).digest("hex");
-
-    console.log(username, newPwd);
-
-    await userModel
-      .create({
-        id: id,
-        username: username,
-        password: newPwd,
-      })
-      .then((result) => {
-        // 创建成功后传递的数据
-        console.log("Registor success");
-        response.body = {
-          code: 100,
-          msg: "Registor success",
-        };
-      })
-      .catch((err) => {
-        console.log("Registor failed");
-        console.log(err);
+      if (!isInclude) {
         response.body = {
           code: 101,
-          msg: "Registor failed",
+          msg: "Register failed",
         };
-      });
-  }
+      }
+    });
 });
 
-/*
- * 登录：http://localhost:3030/login
- * 步骤如下：
- * （1）获取用户输入的用户名和密码
- * （2）使用MD5加密用户输入的密码
- * （3）将用户名与加密后的密码与数据库中的用户名和密码进行对比
- * （4）对比成功，则是合法用户，生成token，然后将token和其他的信息一起打包给客户端
- * （5）对比不成功，非法用户，不生成token，相应给客户端的信息不包含token
- */
 router.post("/login", async (ctx) => {
   const { request, response } = ctx;
   // 获取对象中的用户名和密码

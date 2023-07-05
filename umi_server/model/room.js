@@ -19,22 +19,7 @@ const roomModel = DB.define(
     roomType: {
       type: Sequelize.STRING(32),
       allowNull: true, //private,public
-    },
-    users: {
-      type: DataTypes.STRING(1024),
-      allowNull: true,
-      get() {
-        const value = this.getDataValue("users");
-        return value ? value.split(",") : [];
-      },
-      set(value) {
-        if (Array.isArray(value)) {
-          this.setDataValue("users", value.join(","));
-        } else {
-          this.setDataValue("users", value);
-        }
-      },
-    },
+    }
   },
   {
     freezeTableName: true, // 使用自定义表名

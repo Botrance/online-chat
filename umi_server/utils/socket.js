@@ -1,16 +1,9 @@
-const crypto = require("crypto");
 const messageModel = require("../model/message");
 const roomModel = require("../model/room");
 const UserRoomModel = require("../model/related/UserRoom");
 
 const { Op } = require("sequelize");
-
-// 生成 32 位随机字符串作为 roomId
-function generateRandomId() {
-  const randomBytes = crypto.randomBytes(16);
-  const roomId = randomBytes.toString("hex");
-  return roomId;
-}
+const { generateRandomId } = require("./tools");
 
 module.exports = function (server) {
   const io = require("socket.io")(server, { cors: true });
@@ -19,7 +12,7 @@ module.exports = function (server) {
     console.log("有一个客户端连接上了服务器");
 
     // 加入房间
-    socket.on("joinRoom", async ({ roomId, username, othername }) => {
+    socket.on("joinRoom", async ({ roomId, username }) => {
       try {
         if (roomId) {
           // 根据 roomId 加入房间
@@ -36,62 +29,6 @@ module.exports = function (server) {
             socket.emit("resMsg", {
               success: false,
               message: `Room ${roomId} does not exist.`,
-            });
-          }
-        } else if (othername) {
-          // 查询符合条件的房间
-          const room = await roomModel.findOne({
-            where: {
-              roomType: "private",
-            },
-            include: [
-              {
-                model: UserRoomModel,
-                where: {
-                  username: {
-                    [Op.in]: [username, othername],
-                  },
-                },
-                attributes: [],
-              },
-            ],
-          });
-
-          if (room) {
-            socket.join(room.roomId);
-            console.log(
-              `User ${username} joined private chat room ${room.roomId}`
-            );
-            socket.emit("resMsg", {
-              success: true,
-              message: "joinRoom success",
-            });
-          } else {
-            // 创建新房间
-            const newRoom = await roomModel.create({
-              roomId: generateRandomId(),
-              roomName: `${username} & ${othername}`,
-              roomType: "private",
-            });
-
-            // 创建关联记录
-            await UserRoomModel.create({
-              roomId: newRoom.roomId,
-              username: username,
-            });
-            await UserRoomModel.create({
-              roomId: newRoom.roomId,
-              username: othername,
-            });
-
-            socket.join(newRoom.roomId);
-            console.log(
-              `New private chat room ${newRoom.roomId} created and joined by ${username}`
-            );
-            socket.emit("resMsg", {
-              success: true,
-              roomId: newRoom.roomId,
-              message: "createRoom and joinRoom success",
             });
           }
         } else {

@@ -2,6 +2,7 @@ const Router = require("koa-router");
 const router = new Router(); // 使用路由模块化管理
 
 const { Op } = require("sequelize");
+const { generateRandomId } = require("../utils/tools");
 
 const userModel = require("../model/user"); // 导入数据库模型
 const messageModel = require("../model/message"); // 导入数据库模型
@@ -41,11 +42,38 @@ router.post("/room/query", async (ctx, next) => {
 // 创建房间
 router.post("/room/create", async (ctx, next) => {
   const { roomId, roomName, roomType } = ctx.request.body;
+  const maxAttempts = 10; // 最大尝试次数
+  let newRoomId = roomId;
+  let attempts = 0;
+
+  if (!newRoomId) {
+    newRoomId = generateRandomId();
+  }
 
   try {
+    while (attempts < maxAttempts) {
+      const existingRoom = await roomModel.findOne({
+        where: {
+          roomId: newRoomId,
+        },
+      });
+
+      if (!existingRoom) {
+        break;
+      }
+
+      newRoomId = generateRandomId();
+      attempts++;
+    }
+
+    if (attempts === maxAttempts) {
+      ctx.body = { code: 101, msg: "Failed to create room." };
+      throw new Error("Failed to generate a unique roomId.");
+    }
+
     // 创建房间记录
     const room = await roomModel.create({
-      roomId,
+      roomId: newRoomId,
       roomName,
       roomType,
     });
@@ -88,6 +116,18 @@ router.post("/room/join", async (ctx, next) => {
   const { username, roomId } = ctx.request.body;
 
   try {
+    // 查询用户是否存在
+    const user = await userModel.findOne({
+      where: {
+        username: username,
+      },
+    });
+
+    if (!user) {
+      ctx.body = { code: 110, msg: "User not found." };
+      return;
+    }
+
     const room = await roomModel.findOne({
       where: {
         roomId: roomId || "",
@@ -123,15 +163,22 @@ router.post("/room/leave", async (ctx, next) => {
     });
 
     if (room) {
-      // 删除关联记录
-      await UserRoomModel.destroy({
+      // 查询关联记录
+      const userRoom = await UserRoomModel.findOne({
         where: {
           roomId: room.roomId,
           username: username,
         },
       });
 
-      ctx.body = { code: 100, msg: "Left room successfully.", room };
+      if (userRoom) {
+        // 删除关联记录
+        await userRoom.destroy();
+
+        ctx.body = { code: 100, msg: "Left room successfully.", room };
+      } else {
+        ctx.body = { code: 110, msg: "User is not in the room." };
+      }
     } else {
       ctx.body = { code: 110, msg: "Room not found." };
     }
