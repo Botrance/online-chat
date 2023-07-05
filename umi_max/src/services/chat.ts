@@ -2,12 +2,12 @@ import { request } from '@umijs/max';
 
 export async function queryFriends() {
   try {
-    const response = await request('/chat/friend/query', {
+    console.log('Sending request: queryFriends');
+    const response = await request('/api/chat/friend/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      responseType: 'json', // 将响应数据解析为JSON格式的数组
     });
     return response;
   } catch (error) {
@@ -18,13 +18,13 @@ export async function queryFriends() {
 
 export async function queryRooms(username: string) {
   try {
-    const response = await request('/chat/room/query', {
+    console.log('Sending request: queryRooms');
+    const response = await request('/api/chat/room/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      data: JSON.stringify({ username }),
-      responseType: 'json', // 将响应数据解析为JSON格式的数组
+      data: { username },
     });
     return response;
   } catch (error) {
@@ -35,13 +35,13 @@ export async function queryRooms(username: string) {
 
 export async function queryMsgs(timestamp: number, roomId: string) {
   try {
-    const response = await request('/chat/message/query', {
+    console.log('Sending request: queryMsgs');
+    const response = await request('/api/chat/message/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      data: JSON.stringify({ timestamp, roomId }), // 将参数转换为JSON字符串并发送
-      responseType: 'json', // 将响应数据解析为JSON格式的数组
+      data: { timestamp, roomId },
     });
     return response;
   } catch (error) {

@@ -14,8 +14,9 @@ export const request: RequestConfig = {
   requestInterceptors: [
     (config: any) => {
       const sessionToken = sessionStorage.getItem('token');
-      const urlReg = /^\/api/;
-      let url = config.url.replace(urlReg, proxy);
+
+      let url = proxy + config.url;
+      
       if (sessionToken)
         return {
           ...config,

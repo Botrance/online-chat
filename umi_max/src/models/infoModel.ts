@@ -1,5 +1,5 @@
-import { Effect, Reducer } from '@umijs/max';
-import { queryFriends, queryRooms, queryMsgs } from '@/services/chat';
+import { queryFriends, queryMsgs, queryRooms } from '@/services/chat';
+import { EffectsCommandMap, Reducer } from '@umijs/max';
 
 type friendType = any;
 type roomType = any;
@@ -14,9 +14,19 @@ export interface InfoModelType {
   namespace: 'infoModel';
   state: InfoModelState;
   effects: {
-    getFriends: Effect;
-    getRooms: Effect;
-    getMsgs: Effect;
+    getFriends: (
+      action: { payload: { username: string } },
+      effects: EffectsCommandMap,
+    ) => Generator<any, void, { friends: any[] }>;
+    getRooms: (
+      action: { payload: { username: string } },
+      effects: EffectsCommandMap,
+    ) => Generator<any, void, { rooms: any[] }>;
+
+    getMsgs: (
+      action: { payload: { username: string; roomId: string } },
+      effects: EffectsCommandMap,
+    ) => Generator<any, void, { msgs: any[] }>;
   };
   reducers: {
     saveFriends: Reducer<InfoModelState, SaveAction<friendType[]>>;
@@ -32,7 +42,7 @@ interface SaveAction<T> {
 
 const loadFromStorage = <T>(key: string): T | null | undefined => {
   const data = sessionStorage.getItem(key);
-  if (data === null || data === "undefined") {
+  if (data === null || data === 'undefined') {
     return null;
   }
   return JSON.parse(data);
@@ -50,16 +60,38 @@ const InfoModel: InfoModelType = {
     msgs: [],
   },
   effects: {
-    *getFriends(_, { call, put }) {
-      const response: { friends: friendType[] } = yield call(queryFriends);
+    *getFriends({ payload }: { payload: { username: string } }, { call, put }) {
+      const { username } = payload;
+      const response: { friends: friendType[] } = yield call(
+        queryFriends,
+        username,
+      );
       yield put({ type: 'saveFriends', payload: response.friends });
     },
-    *getRooms(_, { call, put }) {
-      const response: { rooms: roomType[] } = yield call(queryRooms);
-      yield put({ type: 'saveRooms', payload: response.rooms });
+    *getRooms({ payload }: { payload: { username: string } }, { call, put }) {
+      const { username } = payload; // 从 payload 中获取 username 参数
+      try {
+        console.log('Sending request: queryRooms');
+        const response: { rooms: roomType[] } = yield call(
+          queryRooms,
+          username,
+        ); // 调用 queryRooms，并传递 username 参数
+        yield put({ type: 'saveRooms', payload: response.rooms });
+      } catch (error) {
+        console.error('Failed to fetch rooms:', error);
+        yield put({ type: 'saveRooms', payload: [] }); // 处理错误情况，保存一个空数组作为 rooms 状态
+      }
     },
-    *getMsgs(_, { call, put }) {
-      const response: { msgs: msgType[] } = yield call(queryMsgs);
+    *getMsgs(
+      { payload }: { payload: { username: string; roomId: string } },
+      { call, put },
+    ) {
+      const { username, roomId } = payload;
+      const response: { msgs: msgType[] } = yield call(
+        queryMsgs,
+        username,
+        roomId,
+      );
       yield put({ type: 'saveMsgs', payload: response.msgs });
     },
   },

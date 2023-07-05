@@ -20,7 +20,7 @@ module.exports = function (server) {
         console.log("token verification failed");
         next(new Error("token verification failed"));
       } else {
-        console.log("token verification failed");
+        console.log("token verification success");
 
         // 将验证结果添加到 socket 对象中
         socket.decodedToken = decoded;
@@ -37,8 +37,8 @@ module.exports = function (server) {
     try {
       if (decodedToken) {
         socket.emit("resMsg", {
-          success: false,
-          message: "token verification success.",
+          code: 100,
+          msg: "token verification success.",
         });
 
         // 加入房间
@@ -52,26 +52,26 @@ module.exports = function (server) {
                 socket.join(room.roomId);
                 console.log(`User ${username} joined room ${room.roomId}`);
                 socket.emit("resMsg", {
-                  success: true,
-                  message: "joinRoom success",
+                  code: 100,
+                  msg: "joinRoom success",
                 });
               } else {
                 console.log(`Room ${roomId} does not exist.`);
                 socket.emit("resMsg", {
-                  success: false,
-                  message: `Room ${roomId} does not exist.`,
+                  code: 110,
+                  msg: `Room ${roomId} does not exist.`,
                 });
               }
             } else {
               console.log("Invalid joinRoom request.");
               socket.emit("resMsg", {
-                success: false,
-                message: "Invalid joinRoom request.",
+                code: 110,
+                msg: "Invalid joinRoom request.",
               });
             }
           } catch (error) {
             console.error(error);
-            socket.emit("resMsg", { success: false, message: "Server error." });
+            socket.emit("resMsg", { code: 101, msg: "Server error." });
           }
         });
 
@@ -93,13 +93,13 @@ module.exports = function (server) {
             } else {
               console.log("Invalid sendMessage request. RoomId is missing.");
               socket.emit("resMsg", {
-                success: false,
-                message: "Invalid sendMessage request. RoomId is missing.",
+                code: 110,
+                msg: "Invalid sendMessage request. RoomId is missing.",
               });
             }
           } catch (error) {
             console.error(error);
-            socket.emit("resMsg", { success: false, message: "Server error." });
+            socket.emit("resMsg", { code: 101, msg: "Server error." });
           }
         });
 
@@ -117,20 +117,20 @@ module.exports = function (server) {
             socket.leave(roomId);
             console.log(`User ${username} left room ${roomId}`);
             socket.emit("resMsg", {
-              success: true,
-              message: "leaveRoom success.",
+              code: 100,
+              msg: "leaveRoom success.",
             });
           } catch (error) {
             console.error(error);
-            socket.emit("resMsg", { success: false, message: "Server error." });
+            socket.emit("resMsg", { code: 101, msg: "Server error." });
           }
         });
       }
     } catch (error) {
       console.error(error);
       socket.emit("resMsg", {
-        success: false,
-        message: "token verification failed.",
+        code: 101,
+        msg: "token verification failed.",
       });
     }
   });

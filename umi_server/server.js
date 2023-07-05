@@ -51,7 +51,7 @@ const verifyTokenMiddleware = async (ctx, next) => {
 
 const userRouter = require("./routes/user");
 const chatRouter = require("./routes/chat");
-router.use("/user", userRouter);
-router.use("/chat", chatRouter);
+router.use("/api/user", userRouter);
+router.use("/api/chat", chatRouter);
 // router.use("/chat", verifyTokenMiddleware);
 app.use(router.routes()).use(router.allowedMethods());

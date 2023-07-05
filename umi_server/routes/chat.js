@@ -15,32 +15,42 @@ router.get("/test", (ctx) => {
 });
 
 // 查询房间列表
-router.post("/room/query", async (ctx, next) => {
-  const { username } = ctx.request.body;
+router.post("/room/query", async (ctx) => {
+  try {
+    console.log(ctx)
+    const { username } = ctx.request.body;
 
-  // 根据用户名查询房间列表
-  const userRooms = await UserRoomModel.findAll({
-    where: {
-      username: username,
-    },
-    include: [
-      {
-        model: roomModel,
-        attributes: ["roomId", "roomName", "roomType"],
+    // 根据用户名查询房间列表
+    const userRooms = await UserRoomModel.findAll({
+      where: {
+        username: username,
       },
-    ],
-  });
+      include: [
+        {
+          model: roomModel,
+          attributes: ["roomId", "roomName", "roomType"],
+        },
+      ],
+    });
 
-  const rooms = userRooms.map((userRoom) => {
-    const { roomId, roomName, roomType } = userRoom.room;
-    return { roomId, roomName, roomType };
-  });
+    if (userRooms.length === 0) {
+      ctx.body = { code: 110, msg: "No rooms found for the user." };
+    } else {
+      const rooms = userRooms.map((userRoom) => {
+        const { roomId, roomName, roomType } = userRoom.room;
+        return { roomId, roomName, roomType };
+      });
 
-  ctx.body = { code: 100, msg: "Query successful.", rooms };
+      ctx.body = { code: 100, msg: "Query successful.", rooms };
+    }
+  } catch (error) {
+    console.error(error);
+    ctx.body = { code: 101, msg: "Failed to query rooms." };
+  }
 });
 
 // 创建房间
-router.post("/room/create", async (ctx, next) => {
+router.post("/room/create", async (ctx) => {
   const { roomId, roomName, roomType } = ctx.request.body;
   const maxAttempts = 10; // 最大尝试次数
   let newRoomId = roomId;
@@ -86,7 +96,7 @@ router.post("/room/create", async (ctx, next) => {
 });
 
 // 删除房间
-router.post("/room/delete", async (ctx, next) => {
+router.post("/room/delete", async (ctx) => {
   const { roomId, roomName } = ctx.request.body;
   const whereCondition = {};
 
@@ -112,7 +122,7 @@ router.post("/room/delete", async (ctx, next) => {
 });
 
 // 加入房间
-router.post("/room/join", async (ctx, next) => {
+router.post("/room/join", async (ctx) => {
   const { username, roomId } = ctx.request.body;
 
   try {
@@ -152,7 +162,7 @@ router.post("/room/join", async (ctx, next) => {
 });
 
 // 离开房间
-router.post("/room/leave", async (ctx, next) => {
+router.post("/room/leave", async (ctx) => {
   const { username, roomId } = ctx.request.body;
 
   try {
@@ -188,7 +198,7 @@ router.post("/room/leave", async (ctx, next) => {
   }
 });
 
-router.post("/friends/query", (ctx, next) => {
+router.post("/friend/query", async (ctx) => {
   // 在这里编写获取列表的逻辑
   const friends = ["Botrance", "fushizhang"];
   ctx.body = { friends };
