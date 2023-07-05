@@ -66,18 +66,18 @@ router.post("/register", async (ctx) => {
       })
       .then((result) => {
         // 创建成功后传递的数据
-        console.log("注册成功");
+        console.log("Registor success");
         response.body = {
           code: 100,
-          msg: "注册成功",
+          msg: "Registor success",
         };
       })
       .catch((err) => {
-        console.log("注册失败");
+        console.log("Registor failed");
         console.log(err);
         response.body = {
           code: 101,
-          msg: "注册失败",
+          msg: "Registor failed",
         };
       });
   }
@@ -118,27 +118,27 @@ router.post("/login", async (ctx) => {
           // jwt.sign()传入要生成token信息的对象
           let newToken = sign({ ...data[0] });
           // 将token和其他信息打包后相应给客户端
-          console.log("登录成功");
+          console.log("Login success");
           response.body = {
             code: 100,
             id: data[0].id,
-            msg: "登录成功",
+            msg: "Login success",
             token: newToken,
           };
         } else {
           // 密码不相同
-          console.log("密码错误");
+          console.log("Login failed");
           response.body = {
             code: 101,
-            msg: "密码错误",
+            msg: "Login failed, please check the username or the password",
           };
         }
       } else {
         // 没有查询到数据
-        console.log("用户不存在");
+        console.log("No such user");
         response.body = {
           code: 110,
-          msg: "用户不存在",
+          msg: "No such user",
         };
       }
     });

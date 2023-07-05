@@ -19,10 +19,6 @@ const messageModel = DB.define(
       type: DataTypes.STRING(64),
       allowNull: false,
     },
-    receiver: {
-      type: DataTypes.STRING(64),
-      allowNull: true, //为null时说明是群聊
-    },
     message: {
       type: DataTypes.STRING(1024),
       allowNull: false,

@@ -2,11 +2,11 @@ import { ws_proxy } from '@/global/config';
 import { Reducer } from '@umijs/max';
 import { Socket, io } from 'socket.io-client';
 
-interface SocketModelState {
+export interface SocketModelState {
   socket: Socket | null;
 }
 
-interface SocketModelType {
+export interface SocketModelType {
   namespace: 'socketModel';
   state: SocketModelState;
   reducers: {

@@ -1,7 +1,7 @@
-const crypto = require("crypto"); // 导入加密模块
-const userModel = require("../model/user");
+const crypto = require("crypto");
 const messageModel = require("../model/message");
 const roomModel = require("../model/room");
+const UserRoomModel = require("../model/related/UserRoom");
 
 const { Op } = require("sequelize");
 
@@ -42,12 +42,19 @@ module.exports = function (server) {
           // 查询符合条件的房间
           const room = await roomModel.findOne({
             where: {
-              [Op.and]: [
-                { users: { [Op.like]: `%${username}%` } },
-                { users: { [Op.like]: `%${othername}%` } },
-              ],
               roomType: "private",
             },
+            include: [
+              {
+                model: UserRoomModel,
+                where: {
+                  username: {
+                    [Op.in]: [username, othername],
+                  },
+                },
+                attributes: [],
+              },
+            ],
           });
 
           if (room) {
@@ -64,8 +71,17 @@ module.exports = function (server) {
             const newRoom = await roomModel.create({
               roomId: generateRandomId(),
               roomName: `${username} & ${othername}`,
-              users: [username, othername],
               roomType: "private",
+            });
+
+            // 创建关联记录
+            await UserRoomModel.create({
+              roomId: newRoom.roomId,
+              username: username,
+            });
+            await UserRoomModel.create({
+              roomId: newRoom.roomId,
+              username: othername,
             });
 
             socket.join(newRoom.roomId);
@@ -120,10 +136,23 @@ module.exports = function (server) {
     });
 
     // 离开房间
-    socket.on("leaveRoom", ({ roomId }) => {
-      socket.leave(roomId);
-      console.log(`User ${username} left room ${roomId}`);
-      socket.emit("resMsg", { success: true, message: "leaveRoom success." });
+    socket.on("leaveRoom", async ({ roomId, username }) => {
+      try {
+        // 删除关联记录
+        await UserRoomModel.destroy({
+          where: {
+            roomId: roomId,
+            username: username,
+          },
+        });
+
+        socket.leave(roomId);
+        console.log(`User ${username} left room ${roomId}`);
+        socket.emit("resMsg", { success: true, message: "leaveRoom success." });
+      } catch (error) {
+        console.error(error);
+        socket.emit("resMsg", { success: false, message: "Server error." });
+      }
     });
   });
 };

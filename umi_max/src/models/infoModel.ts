@@ -4,13 +4,13 @@ import { queryFriends, queryRooms, queryMsgs } from '@/services/chat';
 type friendType = any;
 type roomType = any;
 type msgType = any;
-interface InfoModelState {
+export interface InfoModelState {
   friends: friendType[];
   rooms: roomType[];
   msgs: msgType[];
 }
 
-interface InfoModelType {
+export interface InfoModelType {
   namespace: 'infoModel';
   state: InfoModelState;
   effects: {

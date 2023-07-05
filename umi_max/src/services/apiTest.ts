@@ -1,7 +1,7 @@
 import { request } from '@umijs/max';
 
 export const test = async () => {
-  request('/api/auth/test', {
+  request('/api/user/test', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -12,7 +12,7 @@ export const test = async () => {
 };
 
 export const testToken = async () => {
-  request('/api/auth/token', {
+  request('/api/user/token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ export const testToken = async () => {
 
 export const authToken = async () => {
   console.log('authToken');
-  const result = await request('/api/auth/token', {
+  const result = await request('/api/user/token', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

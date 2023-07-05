@@ -56,3 +56,11 @@ message 的时间字段使用客户端传递过来的时间，便于后面的同
 
 ## **05.24**
 将路由拦截改为函数组件，使用 show 控制 Outlet 渲染， useEffect 中异步请求更改 state。  
+
+
+## **06.28**
+增加socketModel，防止新建多个socket请求，修改auth验证逻辑  
+
+## **07.04**
+增减infoModel，存储freiends列表和rooms列表，修改数据表结构，调整socket代码  
+初步调试消息发送功能

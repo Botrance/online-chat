@@ -20,13 +20,14 @@ app.use(bodyParser()).use(
   })
 );
 
-initTable("auth");
+initTable("user");
 initTable('room');
 initTable('message');
+initTable('UserRoom');
 
-const authRouter = require("./routes/auth");
+const userRouter = require("./routes/user");
 const chatRouter = require("./routes/chat");
-router.use("/auth", authRouter);
+router.use("/user", userRouter);
 router.use("/chat", chatRouter);
 app.use(router.routes()).use(router.allowedMethods());
 

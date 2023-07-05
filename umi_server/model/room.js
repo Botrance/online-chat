@@ -18,11 +18,11 @@ const roomModel = DB.define(
     },
     roomType: {
       type: Sequelize.STRING(32),
-      allowNull: false, //private,public
+      allowNull: true, //private,public
     },
     users: {
       type: DataTypes.STRING(1024),
-      allowNull: false,
+      allowNull: true,
       get() {
         const value = this.getDataValue("users");
         return value ? value.split(",") : [];
