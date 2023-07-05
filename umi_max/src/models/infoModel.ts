@@ -30,9 +30,12 @@ interface SaveAction<T> {
   payload: T;
 }
 
-const loadFromStorage = <T>(key: string): T | null => {
+const loadFromStorage = <T>(key: string): T | null | undefined => {
   const data = sessionStorage.getItem(key);
-  return data ? JSON.parse(data) : null;
+  if (data === null || data === "undefined") {
+    return null;
+  }
+  return JSON.parse(data);
 };
 
 const saveToStorage = (key: string, data: any) => {

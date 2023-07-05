@@ -48,7 +48,7 @@ const LoginBox: React.FC = ({ dispatch, authModel, socketModel }: any) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
   const onSubmit = async (values: loginParams) => {
-    request('/api/auth/login', {
+    request('/api/user/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

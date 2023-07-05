@@ -30,6 +30,7 @@ const verify = async (req, res) => {
 };
 
 module.exports = {
+  secretKey: secretkey,
   sign,
   verify,
 };

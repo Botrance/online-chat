@@ -22,10 +22,23 @@ const SocketModel: SocketModelType = {
   },
   reducers: {
     connect(state) {
+      
+      const token = sessionStorage.getItem('token');
+      let socket = null;
+      if (token) {
+        socket = io(ws_proxy, {
+          auth: {
+            token: token,
+          },
+        });
+      } else {
+        socket = io(ws_proxy);
+      }
+
       console.log('socket connect success');
       return {
         ...state,
-        socket: io(ws_proxy) as Socket,
+        socket: socket,
       };
     },
     close(state) {
