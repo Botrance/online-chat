@@ -1,7 +1,7 @@
 const DB = require("../config/dbconfig"); // 导入数据库配置文件
 
 const { DataTypes } = require("sequelize");
-const messageModel = DB.define(
+const msgModel = DB.define(
   "message",
   {
     // "message"是info数据库下的表，第一个参数是表名
@@ -45,7 +45,8 @@ const messageModel = DB.define(
   {
     freezeTableName: true, // 使用自定义表名
     timestamps: false, // 不使用时间戳
+    indexes: [{ fields: ["roomId"] }],
   }
 );
 
-module.exports = messageModel; // 导出该模块
+module.exports = msgModel; // 导出该模块

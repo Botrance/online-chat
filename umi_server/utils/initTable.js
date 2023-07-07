@@ -1,16 +1,15 @@
-const messageModel = require("../model/message"); // 导入消息模型
+const msgModel = require("../model/msg"); // 导入消息模型
 const userModel = require("../model/user"); // 导入用户模型
 const roomModel = require("../model/room"); // 导入房间模型
 const UserRoomModel = require("../model/related/UserRoom"); // 导入关联表模型
 
 const models = {
   user: userModel,
-  message: messageModel,
+  message: msgModel,
   room: roomModel,
   UserRoom: UserRoomModel,
 };
 const { DataTypes } = require("sequelize");
-
 
 const initTable = async function (name) {
   try {

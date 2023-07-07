@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 const { generateRandomId } = require("../utils/tools");
 
 const userModel = require("../model/user"); // 导入数据库模型
-const messageModel = require("../model/message"); // 导入数据库模型
+const msgModel = require("../model/msg"); // 导入数据库模型
 const roomModel = require("../model/room"); // 导入数据库模型
 const UserRoomModel = require("../model/related/UserRoom"); // 导入关联表模型
 
@@ -208,7 +208,7 @@ router.post("/msg/query", async (ctx) => {
   const { timestamp, roomId } = ctx.request.body;
 
   // 查询数据表中 timestamp 对应时间以前的消息
-  const messages = await messageModel.findAll({
+  const messages = await msgModel.findAll({
     where: {
       timestamp: {
         [Op.lte]: timestamp,

@@ -1,4 +1,4 @@
-const messageModel = require("../model/message");
+const msgModel = require("../model/msg");
 const roomModel = require("../model/room");
 const UserRoomModel = require("../model/related/UserRoom");
 
@@ -80,7 +80,7 @@ module.exports = function (server) {
           try {
             if (roomId) {
               // 创建消息记录
-              const newMessage = await messageModel.create({
+              const newMessage = await msgModel.create({
                 id: generateRandomId(),
                 roomId: roomId,
                 sender: username,
@@ -106,13 +106,6 @@ module.exports = function (server) {
         // 离开房间
         socket.on("leaveRoom", async ({ roomId, username }) => {
           try {
-            // 删除关联记录
-            await UserRoomModel.destroy({
-              where: {
-                roomId: roomId,
-                username: username,
-              },
-            });
 
             socket.leave(roomId);
             console.log(`User ${username} left room ${roomId}`);
