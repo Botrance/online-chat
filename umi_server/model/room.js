@@ -6,7 +6,6 @@ const roomModel = DB.define(
   "room",
   {
     roomId: {
-      // id与数据库中的列名保持一致
       type: Sequelize.STRING(64),
       primaryKey: true, // 主键
       unique: true, // 唯一的键

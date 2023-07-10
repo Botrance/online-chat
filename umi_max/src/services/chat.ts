@@ -16,7 +16,11 @@ export async function queryFriends() {
   }
 }
 
-export async function queryRooms(username: string) {
+export async function queryRooms(
+  timestamp: number,
+  username: string,
+  roomType: string,
+) {
   try {
     console.log('Sending request: queryRooms');
     const response = await request('/api/chat/room/query', {
@@ -24,7 +28,7 @@ export async function queryRooms(username: string) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { username },
+      data: { timestamp, username, roomType },
     });
     return response;
   } catch (error) {

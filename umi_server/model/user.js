@@ -7,21 +7,20 @@ const userModel = DB.define(
   {
     // "user"是info数据库下的表，第一个参数是表名
     id: {
-      // id与数据库中的列名保持一致
-      type: DataTypes.STRING(64), // int类型
+      type: DataTypes.STRING(64),
       primaryKey: true, // 主键
       unique: true, // 唯一的键
     },
     username: {
-      // username与数据库中的列名保持一致
-      type: DataTypes.STRING(64), // string类型
-      allowNull: false, // 不允许为空
+      type: DataTypes.STRING(64),
+      allowNull: false,
     },
     password: {
-      // password与数据库中列名保持一致
-      type: DataTypes.STRING(64), // string类型
-      allowNull: false, // 不允许为空
+      type: DataTypes.STRING(64),
+      allowNull: false,
     },
+    roomUpdate: { type: DataTypes.BIGINT, allowNull: true },
+    friendUpdate: { type: DataTypes.BIGINT, allowNull: true },
   },
   {
     freezeTableName: true, // 使用自定义表名

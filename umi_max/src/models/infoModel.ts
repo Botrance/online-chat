@@ -1,7 +1,6 @@
-import { friendType, roomType, msgType } from '@/global/define';
+import { friendType, msgType, roomType } from '@/global/define';
 import { queryFriends, queryMsgs, queryRooms } from '@/services/chat';
 import { EffectsCommandMap, Reducer } from '@umijs/max';
-
 
 export interface InfoModelState {
   friends: friendType[];
@@ -18,7 +17,9 @@ export interface InfoModelType {
       effects: EffectsCommandMap,
     ) => Generator<any, void, { friends: any[] }>;
     getRooms: (
-      action: { payload: { username: string } },
+      action: {
+        payload: { username: string; roomType: string; timestamp: number };
+      },
       effects: EffectsCommandMap,
     ) => Generator<any, void, { rooms: any[] }>;
     getMsgs: (
@@ -70,13 +71,20 @@ const InfoModel: InfoModelType = {
       );
       yield put({ type: 'saveFriends', payload: response.friends });
     },
-    *getRooms({ payload }: { payload: { username: string } }, { call, put }) {
-      const { username } = payload; // 从 payload 中获取 username 参数
+    *getRooms(
+      {
+        payload,
+      }: { payload: { username: string; roomType: string; timestamp: number } },
+      { call, put },
+    ) {
+      const { username, roomType, timestamp } = payload; // 从 payload 中获取 username 参数
       try {
         console.log('Sending request: queryRooms');
         const response: { rooms: roomType[] } = yield call(
           queryRooms,
           username,
+          roomType,
+          timestamp,
         ); // 调用 queryRooms，并传递 username 参数
         yield put({ type: 'saveRooms', payload: response.rooms });
       } catch (error) {

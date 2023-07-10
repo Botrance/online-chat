@@ -17,31 +17,49 @@ router.get("/test", (ctx) => {
 // 查询房间列表
 router.post("/room/query", async (ctx) => {
   try {
-    console.log(ctx)
-    const { username } = ctx.request.body;
+    const { username, timestamp, roomType } = ctx.request.body;
 
-    // 根据用户名查询房间列表
-    const userRooms = await UserRoomModel.findAll({
+    // 查询用户的 roomUpdate 值
+    const user = await userModel.findOne({
       where: {
         username: username,
       },
-      include: [
-        {
-          model: roomModel,
-          attributes: ["roomId", "roomName", "roomType"],
-        },
-      ],
     });
 
-    if (userRooms.length === 0) {
-      ctx.body = { code: 110, msg: "No rooms found for the user." };
-    } else {
-      const rooms = userRooms.map((userRoom) => {
-        const { roomId, roomName, roomType } = userRoom.room;
-        return { roomId, roomName, roomType };
+    if (user && (!user.roomUpdate|| user.roomUpdate > timestamp)) {
+      let roomQuery = {
+        username: username,
+      };
+
+      if (roomType === "private") {
+        roomQuery.roomType = "private";
+      } else if (roomType === "public") {
+        roomQuery.roomType = "public";
+      }
+
+      // 根据查询条件查询房间列表
+      const userRooms = await UserRoomModel.findAll({
+        where: roomQuery,
+        include: [
+          {
+            model: roomModel,
+            attributes: ["roomId", "roomName", "roomType"],
+          },
+        ],
       });
 
-      ctx.body = { code: 100, msg: "Query successful.", rooms };
+      if (userRooms.length === 0) {
+        ctx.body = { code: 110, msg: "No rooms found for the user." };
+      } else {
+        const rooms = userRooms.map((userRoom) => {
+          const { roomId, roomName, roomType } = userRoom.room;
+          return { roomId, roomName, roomType };
+        });
+
+        ctx.body = { code: 100, msg: "Query successful.", rooms };
+      }
+    } else {
+      ctx.body = { code: 102, msg: "Room never changed" };
     }
   } catch (error) {
     console.error(error);
