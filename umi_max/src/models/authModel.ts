@@ -1,10 +1,10 @@
 import { authToken } from '@/services/apiTest';
 import { Effect, Reducer, Subscription } from '@umijs/max';
-interface AuthModelState {
-  auth: boolean;
+export interface AuthModelState {
+  auth: boolean|undefined;
 }
 
-interface AuthModelType {
+export interface AuthModelType {
   namespace: 'authModel';
   state: AuthModelState;
   reducers: {
@@ -22,7 +22,7 @@ interface AuthModelType {
 const AuthModel: AuthModelType = {
   namespace: 'authModel',
   state: {
-    auth: false,
+    auth: undefined,
   },
   reducers: {
     updateState(state, { payload }) {

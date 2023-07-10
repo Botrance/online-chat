@@ -23,7 +23,7 @@ export const testToken = async () => {
 };
 
 export const authToken = async () => {
-  console.log('authToken');
+  console.log('Sending request: authToken');
   const result = await request('/api/user/token', {
     method: 'POST',
     headers: {
@@ -38,5 +38,5 @@ export const authToken = async () => {
       console.log(reason);
       return false;
     });
-  if (result) return result;
+  return result || false;
 };

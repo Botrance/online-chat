@@ -1,30 +1,29 @@
-import { authToken } from '@/services/apiTest';
-import { connect } from '@umijs/max';
-import { Outlet, useNavigate } from '@umijs/max';
+import { AuthModelState } from '@/models/authModel';
+import { Dispatch, Outlet, connect, useNavigate } from '@umijs/max';
 import React, { useEffect, useState } from 'react';
 
-const authView: React.FC = ({ dispatch, authModel }: any) => {
-  const nav = useNavigate();
+interface AuthViewProps {
+  dispatch: Dispatch;
+  authModel: AuthModelState;
+}
+
+const AuthView: React.FC<AuthViewProps> = ({ dispatch, authModel }) => {
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
-  const [auth, setAuth] = useState(undefined); // 设置初始值为 undefined 不同于 false 和 true 的值
 
+  console.log('authView now check the token');
   useEffect(() => {
-    setAuth(authModel.auth);
-  }, [authModel.auth]);
-
-  useEffect(() => {
-    if (auth === false) {
-      nav('/login');
+    const auth = authModel.auth;
+    if (auth === undefined) {
+      dispatch({ type: 'authModel/getAuth' });
+    } else if (auth === false) {
+      navigate('/login');
     } else {
       if (!show) setShow(true);
     }
-  }, [auth]);
-
-  useEffect(() => {
-    dispatch({ type: 'authModel/getAuth' });
-  }, [dispatch]);
+  }, [dispatch, authModel.auth, navigate, show]);
 
   return <>{show && <Outlet />}</>;
 };
 
-export default connect((state: any) => state)(authView);
+export default connect((state: any) => state)(AuthView);

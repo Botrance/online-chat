@@ -5,10 +5,10 @@ export default defineConfig({
   model: {},
   request: {},
   dva: {},
-  mfsu:{},
+  mfsu: {},
   mock: false,
   layout: false,
-  exportStatic:{},
+  exportStatic: {},
   routes: [
     {
       name: '主页面',
@@ -27,15 +27,21 @@ export default defineConfig({
           component: './Login',
         },
         {
-          name: '首页',
-          path: '/home',
-          component: './Home',
-        },
-        {
-          name: '聊天页面',
-          path: '/chat',
-          component: './Chat',
+          path: '/',
+          component: '@/components/home',
           wrappers: ['@/utils/auth'],
+          routes: [
+            {
+              name: '聊天',
+              path: '/chat',
+              component: './Chat',
+            },
+            {
+              name: '关系',
+              path: '/relation',
+              component: './Relation',
+            },
+          ],
         },
       ],
     },

@@ -1,3 +1,5 @@
+import { AuthModelState } from '@/models/authModel';
+import { SocketModelState } from '@/models/socketModel';
 import {
   AlipayCircleOutlined,
   LockOutlined,
@@ -13,6 +15,7 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
+import { Dispatch } from '@umijs/max';
 import { connect, request, useNavigate } from '@umijs/max';
 import { Space, Tabs, message } from 'antd';
 import type { CSSProperties } from 'react';
@@ -33,11 +36,16 @@ const tabItem = [
   { label: '手机号登录', key: 'phone' },
 ];
 
-interface loginParams {
+interface LoginPageProps {
+  dispatch: Dispatch;
+  authModel: AuthModelState;
+  socketModel:SocketModelState
+}
+interface LoginParams {
   username: string;
   password: string;
 }
-interface loginRes {
+interface LoginRes {
   code: number;
   msg: string;
   token: string;
@@ -47,7 +55,10 @@ interface loginRes {
 const LoginBox: React.FC = ({ dispatch, authModel, socketModel }: any) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
-  const onSubmit = async (values: loginParams) => {
+
+  console.log('loginPage render');
+
+  const onSubmit = async (values: LoginParams) => {
     request('/api/user/login', {
       method: 'POST',
       headers: {
@@ -57,7 +68,7 @@ const LoginBox: React.FC = ({ dispatch, authModel, socketModel }: any) => {
         username: values.username,
         password: values.password,
       },
-    }).then(async function (response: loginRes) {
+    }).then(async function (response: LoginRes) {
       if (response.code === 100) {
         sessionStorage.setItem('username', values.username);
         sessionStorage.setItem('id', response.id);
@@ -67,6 +78,10 @@ const LoginBox: React.FC = ({ dispatch, authModel, socketModel }: any) => {
         navigate('/chat');
       } else {
         sessionStorage.removeItem('token');
+        await dispatch({
+          type: 'authModel/updateState',
+          payload: { auth: false },
+        });
       }
       console.log(response.msg);
     });
@@ -74,7 +89,7 @@ const LoginBox: React.FC = ({ dispatch, authModel, socketModel }: any) => {
 
   return (
     <ProConfigProvider hashed={false}>
-      <div style={{ backgroundColor: 'white' }}>
+      <div style={{ backgroundColor: 'white', width: '100%' }}>
         <LoginForm
           // logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
           onFinish={onSubmit}
