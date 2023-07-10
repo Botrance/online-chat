@@ -53,10 +53,8 @@ message 的时间字段使用客户端传递过来的时间，便于后面的同
 问题：打包后的 dist 因为使用 browserRouter 导致404,配置 exportStatic:{} 即可。
 涉及 jwt 安全问题 ： refreshtoken（实际意义不大），唯一登陆设备绑定，二级密码验证码
 
-
 ## **05.24**
 将路由拦截改为函数组件，使用 show 控制 Outlet 渲染， useEffect 中异步请求更改 state。  
-
 
 ## **06.28**
 增加socketModel，防止新建多个socket请求，修改auth验证逻辑  
@@ -64,3 +62,6 @@ message 的时间字段使用客户端传递过来的时间，便于后面的同
 ## **07.04**
 增减infoModel，存储freiends列表和rooms列表，修改数据表结构，调整socket代码  
 初步调试消息发送功能
+
+
+todo:房间添加置顶

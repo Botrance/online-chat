@@ -52,7 +52,7 @@ interface LoginRes {
   id: string;
 }
 //需要添加验证码功能
-const LoginBox: React.FC = ({ dispatch, authModel, socketModel }: any) => {
+const LoginBox: React.FC<LoginPageProps> = ({ dispatch, authModel, socketModel }) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
   const navigate = useNavigate();
 
