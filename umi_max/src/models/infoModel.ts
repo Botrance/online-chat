@@ -1,9 +1,8 @@
+import { friendType, roomType, msgType } from '@/global/define';
 import { queryFriends, queryMsgs, queryRooms } from '@/services/chat';
 import { EffectsCommandMap, Reducer } from '@umijs/max';
 
-type friendType = any;
-type roomType = any;
-type msgType = any;
+
 export interface InfoModelState {
   friends: friendType[];
   rooms: roomType[];
@@ -22,11 +21,14 @@ export interface InfoModelType {
       action: { payload: { username: string } },
       effects: EffectsCommandMap,
     ) => Generator<any, void, { rooms: any[] }>;
-
     getMsgs: (
       action: { payload: { username: string; roomId: string } },
       effects: EffectsCommandMap,
     ) => Generator<any, void, { msgs: any[] }>;
+    clearStorage: (
+      _: any,
+      effects: EffectsCommandMap,
+    ) => Generator<any, void, any>;
   };
   reducers: {
     saveFriends: Reducer<InfoModelState, SaveAction<friendType[]>>;
@@ -40,7 +42,7 @@ interface SaveAction<T> {
   payload: T;
 }
 
-const loadFromStorage = <T>(key: string): T | null | undefined => {
+export const loadFromStorage = <T>(key: string): T | null | undefined => {
   const data = sessionStorage.getItem(key);
   if (data === null || data === 'undefined') {
     return null;
@@ -93,6 +95,17 @@ const InfoModel: InfoModelType = {
         roomId,
       );
       yield put({ type: 'saveMsgs', payload: response.msgs });
+    },
+    *clearStorage(
+      _,
+      { put, call, select }: EffectsCommandMap,
+    ): Generator<any, void, any> {
+      sessionStorage.removeItem('infoModel.friends');
+      sessionStorage.removeItem('infoModel.rooms');
+      sessionStorage.removeItem('infoModel.msgs');
+      yield put({ type: 'saveFriends', payload: [] });
+      yield put({ type: 'saveRooms', payload: [] });
+      yield put({ type: 'saveMsgs', payload: [] });
     },
   },
   reducers: {
