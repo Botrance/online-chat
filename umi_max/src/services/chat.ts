@@ -17,9 +17,9 @@ export async function queryFriends() {
 }
 
 export async function queryRooms(
-  timestamp: number,
   username: string,
   roomType: string,
+  timestamp: number,
 ) {
   try {
     console.log('Sending request: queryRooms');
@@ -37,7 +37,7 @@ export async function queryRooms(
   }
 }
 
-export async function queryMsgs(timestamp: number, roomId: string) {
+export async function queryMsgs(roomId: string, timestamp: number) {
   try {
     console.log('Sending request: queryMsgs');
     const response = await request('/api/chat/msg/query', {
