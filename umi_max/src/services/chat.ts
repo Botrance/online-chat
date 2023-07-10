@@ -36,7 +36,7 @@ export async function queryRooms(username: string) {
 export async function queryMsgs(timestamp: number, roomId: string) {
   try {
     console.log('Sending request: queryMsgs');
-    const response = await request('/api/chat/message/query', {
+    const response = await request('/api/chat/msg/query', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
