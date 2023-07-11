@@ -306,6 +306,7 @@ router.post("/msg/query", async (ctx) => {
 
     // 构造结果对象数组
     const result = messages.map((msg) => ({
+      id:msg.id,
       sender: msg.sender,
       message: msg.message,
       time_CN: msg.time_CN,

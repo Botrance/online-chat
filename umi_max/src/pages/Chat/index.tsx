@@ -2,8 +2,8 @@ import { ProCard } from '@ant-design/pro-components';
 import { connect } from '@umijs/max';
 import { useEffect, useState } from 'react';
 
-import { roomType } from '@/global/define';
-import { InfoModelState } from '@/models/infoModel';
+import { msgType, roomType } from '@/global/define';
+import { InfoModelState, loadFromStorage } from '@/models/infoModel';
 import { SocketModelState } from '@/models/socketModel';
 import { Dispatch } from '@umijs/max';
 import { Button, Form, Input } from 'antd';
@@ -20,6 +20,11 @@ interface RoomListProps {
   rooms: roomType[];
   selectedRoomId: string | null;
   onRoomClick: (roomId: string) => void;
+}
+
+interface MsgListProps {
+  msgs: msgType[]|undefined;
+  username: string | null;
 }
 
 const RoomList: React.FC<RoomListProps> = React.memo(
@@ -52,13 +57,30 @@ const RoomList: React.FC<RoomListProps> = React.memo(
   },
 );
 
+const MsgList: React.FC<MsgListProps> = React.memo(({ msgs, username }) => {
+  return (
+    <>
+      {msgs?msgs.map((msg) => (
+        <div
+          key={msg.id}
+          className={`msg-card ${
+            msg.sender === username ? 'sent' : 'received'
+          }`}
+        >
+          {msg.message}
+        </div>
+      )):<></>}
+    </>
+  );
+});
+
 const ChatPage: React.FC<ChatPageProps> = ({
   dispatch,
   socketModel,
   infoModel,
 }) => {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
-  const [form] = Form.useForm();//后面请修改为状态管理，因为要暂留text
+  const [form] = Form.useForm(); //后面请修改为状态管理，因为要暂留text
 
   // 从 sessionStorage 中获取用户名和 ID
   const username = sessionStorage.getItem('username');
@@ -128,23 +150,25 @@ const ChatPage: React.FC<ChatPageProps> = ({
   }, [dispatch, socketModel.socket, selectedRoomId]);
 
   const handleSubmit = () => {
-    form.validateFields().then(values => {
+    form.validateFields().then((values) => {
       const textValue = values.text;
       const socket = socketModel.socket;
-    // 发送消息
-    if (textValue && socket && selectedRoomId) {
-      const data = {
-        message: textValue,
-        username: username,
-        roomId: selectedRoomId,
-      };
-      socket.emit('sendMessage', data);
-      console.log(
-        `message from ${username} to room: ${getRoomNameById(selectedRoomId)}`,
-        data,
-      );
-      form.resetFields();
-    }
+      // 发送消息
+      if (textValue && socket && selectedRoomId) {
+        const data = {
+          message: textValue,
+          username: username,
+          roomId: selectedRoomId,
+        };
+        socket.emit('sendMessage', data);
+        console.log(
+          `message from ${username} to room: ${getRoomNameById(
+            selectedRoomId,
+          )}`,
+          data,
+        );
+        form.resetFields();
+      }
     });
   };
 
@@ -176,7 +200,18 @@ const ChatPage: React.FC<ChatPageProps> = ({
           </ProCard>
 
           <ProCard>
-            <div style={{ height: '280px' }}></div>
+            <div style={{ height: '280px' }}>
+              <MsgList
+                username={username}
+                msgs={() => {
+                  let msgs = loadFromStorage<msgType>(
+                    `infoModel.msgs.${selectedRoomId}`,
+                  );
+                  if(msgs)return msgs;
+                  return undefined
+                }}
+              />
+            </div>
           </ProCard>
 
           <ProCard
@@ -186,14 +221,10 @@ const ChatPage: React.FC<ChatPageProps> = ({
           >
             <Form form={form}>
               <Form.Item name="text">
-                <Input.TextArea
-                  bordered={false}
-                  maxLength={5000}
-                  rows={4}
-                />
+                <Input.TextArea bordered={false} maxLength={5000} rows={4} />
               </Form.Item>
             </Form>
-            <Button className='chat-btn' type="primary" onClick={handleSubmit}>
+            <Button className="chat-btn" type="primary" onClick={handleSubmit}>
               发送
             </Button>
           </ProCard>
