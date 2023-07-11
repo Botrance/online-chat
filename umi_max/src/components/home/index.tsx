@@ -69,10 +69,15 @@ const HomePage: React.FC<HomePageProps> = ({ dispatch, infoModel }) => {
       payload: { username: username },
     });
     dispatch({ type: 'infoModel/getRooms', payload: { username: username } });
+    return () => {
+      dispatch({
+        type: 'infoModel/clearStorage',
+      });
+    };
   }, [dispatch, username]);
   return (
-    <div className='home-page-card' >
-      <ProCard  split="vertical">
+    <div className="home-page-card">
+      <ProCard split="vertical">
         <ProCard colSpan="5%" direction>
           <Sider />
         </ProCard>
