@@ -23,7 +23,7 @@ interface RoomListProps {
 }
 
 interface MsgListProps {
-  msgs: msgType[]|undefined;
+  msgs: msgType[];
   username: string | null;
 }
 
@@ -60,16 +60,20 @@ const RoomList: React.FC<RoomListProps> = React.memo(
 const MsgList: React.FC<MsgListProps> = React.memo(({ msgs, username }) => {
   return (
     <>
-      {msgs?msgs.map((msg) => (
-        <div
-          key={msg.id}
-          className={`msg-card ${
-            msg.sender === username ? 'sent' : 'received'
-          }`}
-        >
-          {msg.message}
-        </div>
-      )):<></>}
+      {msgs ? (
+        msgs.map((msg) => (
+          <div
+            key={msg.id}
+            className={`msg-card ${
+              msg.sender === username ? 'sent' : 'received'
+            }`}
+          >
+            {msg.message}
+          </div>
+        ))
+      ) : (
+        <></>
+      )}
     </>
   );
 });
@@ -89,15 +93,17 @@ const ChatPage: React.FC<ChatPageProps> = ({
   const startTime = Date.now(); // 获取当前时间戳
   console.log('route chat render');
 
-  // 当选中房间时更新 selectedRoomId
-  const handleRoomClick = (roomId: string) => {
-    setSelectedRoomId(roomId);
-    form.resetFields();
-  };
-
   const getRoomNameById = (roomId: string) => {
     const room = infoModel.rooms.find((room) => room.roomId === roomId);
     return room ? room.roomName : '';
+  };
+
+  const getMsgById = (roomId: string | null): msgType[] => {
+    if (roomId) {
+      const result = loadFromStorage<msgType[]>(`infoModel.msgs.${roomId}`);
+      if (result) return result;
+      else return [];
+    } else return [];
   };
 
   useEffect(() => {
@@ -148,6 +154,12 @@ const ChatPage: React.FC<ChatPageProps> = ({
       }
     };
   }, [dispatch, socketModel.socket, selectedRoomId]);
+
+  // 当选中房间时更新 selectedRoomId
+  const handleRoomClick = (roomId: string) => {
+    setSelectedRoomId(roomId);
+    form.resetFields();
+  };
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
@@ -201,16 +213,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
 
           <ProCard>
             <div style={{ height: '280px' }}>
-              <MsgList
-                username={username}
-                msgs={() => {
-                  let msgs = loadFromStorage<msgType>(
-                    `infoModel.msgs.${selectedRoomId}`,
-                  );
-                  if(msgs)return msgs;
-                  return undefined
-                }}
-              />
+              <MsgList username={username} msgs={getMsgById(selectedRoomId)} />
             </div>
           </ProCard>
 
