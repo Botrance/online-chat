@@ -1,4 +1,4 @@
-import { ProCard, ProForm, ProFormTextArea } from '@ant-design/pro-components';
+import { ProCard } from '@ant-design/pro-components';
 import { connect } from '@umijs/max';
 import { useEffect, useState } from 'react';
 
@@ -6,6 +6,7 @@ import { roomType } from '@/global/define';
 import { InfoModelState } from '@/models/infoModel';
 import { SocketModelState } from '@/models/socketModel';
 import { Dispatch } from '@umijs/max';
+import { Button, Form, Input } from 'antd';
 import React from 'react';
 import './index.less';
 
@@ -33,10 +34,13 @@ const RoomList: React.FC<RoomListProps> = React.memo(
       <>
         {rooms.map((room) => (
           <div
+            className="room-card"
             key={room.roomId}
             style={{
               backgroundColor:
-                room.roomId === selectedRoomId ? 'grey' : 'white',
+                room.roomId === selectedRoomId
+                  ? 'rgb(235, 235, 235)'
+                  : 'rgb(248, 249, 249)',
             }}
             onClick={() => onRoomClick(room.roomId)}
           >
@@ -54,6 +58,8 @@ const ChatPage: React.FC<ChatPageProps> = ({
   infoModel,
 }) => {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+  const [form] = Form.useForm();//后面请修改为状态管理，因为要暂留text
+
   // 从 sessionStorage 中获取用户名和 ID
   const username = sessionStorage.getItem('username');
   const id = sessionStorage.getItem('id');
@@ -64,6 +70,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
   // 当选中房间时更新 selectedRoomId
   const handleRoomClick = (roomId: string) => {
     setSelectedRoomId(roomId);
+    form.resetFields();
   };
 
   const getRoomNameById = (roomId: string) => {
@@ -120,12 +127,14 @@ const ChatPage: React.FC<ChatPageProps> = ({
     };
   }, [dispatch, socketModel.socket, selectedRoomId]);
 
-  const ioEmit = async (values: { text: string | undefined }) => {
-    const socket = socketModel.socket;
+  const handleSubmit = () => {
+    form.validateFields().then(values => {
+      const textValue = values.text;
+      const socket = socketModel.socket;
     // 发送消息
-    if (values.text && socket && selectedRoomId) {
+    if (textValue && socket && selectedRoomId) {
       const data = {
-        message: values.text,
+        message: textValue,
         username: username,
         roomId: selectedRoomId,
       };
@@ -134,7 +143,9 @@ const ChatPage: React.FC<ChatPageProps> = ({
         `message from ${username} to room: ${getRoomNameById(selectedRoomId)}`,
         data,
       );
+      form.resetFields();
     }
+    });
   };
 
   return (
@@ -142,7 +153,10 @@ const ChatPage: React.FC<ChatPageProps> = ({
       <ProCard split="vertical">
         <ProCard colSpan="20%" split="horizontal" direction="column">
           <ProCard style={{ height: '50px' }}></ProCard>
-          <ProCard>
+          <ProCard
+            style={{ backgroundColor: 'rgb(248, 249, 249)', zIndex: '100' }}
+            ghost
+          >
             <RoomList
               rooms={infoModel.rooms}
               selectedRoomId={selectedRoomId}
@@ -151,14 +165,37 @@ const ChatPage: React.FC<ChatPageProps> = ({
           </ProCard>
         </ProCard>
 
-        <ProCard colSpan="80%" split="horizontal" direction="column">
-          <ProCard style={{ height: '50px' }}></ProCard>
+        <ProCard
+          className="chat-main-area"
+          colSpan="80%"
+          split="horizontal"
+          direction="column"
+        >
+          <ProCard style={{ height: '50px' }}>
+            {selectedRoomId ? getRoomNameById(selectedRoomId) : ''}
+          </ProCard>
+
           <ProCard>
-            <ProForm onFinish={ioEmit}>
-              <div id="chat-box" className="chat-box">
-                <ProFormTextArea name="text"></ProFormTextArea>
-              </div>
-            </ProForm>
+            <div style={{ height: '280px' }}></div>
+          </ProCard>
+
+          <ProCard
+            className="chat-box"
+            style={{ height: '190px', width: '100%' }}
+            ghost
+          >
+            <Form form={form}>
+              <Form.Item name="text">
+                <Input.TextArea
+                  bordered={false}
+                  maxLength={5000}
+                  rows={4}
+                />
+              </Form.Item>
+            </Form>
+            <Button className='chat-btn' type="primary" onClick={handleSubmit}>
+              发送
+            </Button>
           </ProCard>
         </ProCard>
       </ProCard>
