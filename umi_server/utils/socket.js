@@ -76,7 +76,7 @@ module.exports = function (server) {
         });
 
         // 发送消息
-        socket.on("sendMessage", async ({ roomId, username, message }) => {
+        socket.on("sendMessage", async ({ roomId, username, message, timestamp }) => {
           try {
             if (roomId) {
               // 创建消息记录
@@ -85,7 +85,7 @@ module.exports = function (server) {
                 roomId: roomId,
                 sender: username,
                 message: message,
-                timestamp: new Date().getTime(),
+                timestamp: timestamp,
               });
 
               // 在房间内广播消息

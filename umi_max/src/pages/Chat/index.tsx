@@ -90,7 +90,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
   const username = sessionStorage.getItem('username');
   const id = sessionStorage.getItem('id');
 
-  const startTime = Date.now(); // 获取当前时间戳
+  const startTime = Date.now() - 24 * 60 * 60 * 1000; // 获取当前时间戳
   console.log('route chat render');
 
   const getRoomNameById = (roomId: string) => {
@@ -122,7 +122,6 @@ const ChatPage: React.FC<ChatPageProps> = ({
 
   useEffect(() => {
     const socket = socketModel.socket;
-    const endTime = Date.now();
     if (socket && selectedRoomId) {
       socket.emit('joinRoom', {
         username: username,
@@ -135,7 +134,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
             type: 'infoModel/getMsgs',
             payload: {
               startTime: startTime,
-              endTime: endTime, // 传递的时间戳参数
+              endTime: Date.now(), // 传递的时间戳参数
               roomId: selectedRoomId, // 传递的房间ID参数
             },
           });
@@ -171,6 +170,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
           message: textValue,
           username: username,
           roomId: selectedRoomId,
+          timestamp: Date.now(),
         };
         socket.emit('sendMessage', data);
         console.log(

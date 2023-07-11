@@ -197,7 +197,6 @@ router.post("/room/join", async (ctx) => {
     });
 
     if (room) {
-
       // 检查用户是否已经加入了该房间
       const existingUserRoom = await UserRoomModel.findOne({
         where: {
@@ -287,9 +286,10 @@ router.post("/friend/query", async (ctx) => {
 
 router.post("/msg/query", async (ctx) => {
   try {
-    const { startTime, endTime } = ctx.request.body;
+    const { startTime, endTime, roomId } = ctx.request.body;
 
     const query = {
+      roomId: roomId,
       timestamp: {
         [Op.gte]: startTime,
       },
@@ -306,7 +306,7 @@ router.post("/msg/query", async (ctx) => {
 
     // 构造结果对象数组
     const result = messages.map((msg) => ({
-      id:msg.id,
+      id: msg.id,
       sender: msg.sender,
       message: msg.message,
       time_CN: msg.time_CN,
