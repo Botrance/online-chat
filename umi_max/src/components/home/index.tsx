@@ -5,7 +5,9 @@ import {
   MusicIcon,
   RelationIcon,
 } from '@/components/icon';
+import { resType } from '@/global/define';
 import { InfoModelState } from '@/models/infoModel';
+import { SocketModelState } from '@/models/socketModel';
 import { ProCard } from '@ant-design/pro-components';
 import { Dispatch, Outlet, connect, useLocation } from '@umijs/max';
 import { useEffect } from 'react';
@@ -18,6 +20,7 @@ type SiderItemType = {
 
 interface HomePageProps {
   dispatch: Dispatch;
+  socketModel: SocketModelState;
   infoModel: InfoModelState;
 }
 
@@ -59,22 +62,51 @@ const Sider: React.FC = () => {
   );
 };
 
-const HomePage: React.FC<HomePageProps> = ({ dispatch, infoModel }) => {
+const HomePage: React.FC<HomePageProps> = ({
+  dispatch,
+  infoModel,
+  socketModel,
+}) => {
   console.log('route home render');
 
   const username = sessionStorage.getItem('username');
+
   useEffect(() => {
     dispatch({
       type: 'infoModel/getFriends',
       payload: { username: username },
     });
-    dispatch({ type: 'infoModel/getRooms', payload: { username: username } });
+    dispatch({
+      type: 'infoModel/getRooms',
+      payload: { username: username, roomType: 'all' },
+    });
     return () => {
       dispatch({
         type: 'infoModel/clearStorage',
       });
     };
   }, [dispatch, username]);
+
+  useEffect(() => {
+    const socket = socketModel.socket;
+
+    if (!socket) {
+      dispatch({ type: 'socketModel/connect' });
+    } else {
+      socket.on('resMsg', (response: resType) => {
+        console.log(response);
+      });
+    }
+
+    return () => {
+      const socket = socketModel.socket;
+      if (socket) {
+        socket.off('resMsg');
+        dispatch({ type: 'socketModel/close' });
+      }
+    };
+  }, [dispatch, socketModel.socket, username]);
+
   return (
     <div className="home-page-card">
       <ProCard split="vertical">

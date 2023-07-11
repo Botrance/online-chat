@@ -13,12 +13,13 @@ const roomModel = DB.define(
     },
     roomName: {
       type: Sequelize.STRING(64),
-      allowNull: true,
+      allowNull: false,
     },
     roomType: {
       type: Sequelize.STRING(32),
-      allowNull: true, //private,public
-    }
+      allowNull: false, //private,public
+    },
+    msgUpdate: { type: DataTypes.BIGINT, allowNull: true },
   },
   {
     freezeTableName: true, // 使用自定义表名

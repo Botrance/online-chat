@@ -37,7 +37,11 @@ export async function queryRooms(
   }
 }
 
-export async function queryMsgs(roomId: string, timestamp: number) {
+export async function queryMsgs(
+  roomId: string,
+  startTime: number,
+  endTime: number,
+) {
   try {
     console.log('Sending request: queryMsgs');
     const response = await request('/api/chat/msg/query', {
@@ -45,7 +49,7 @@ export async function queryMsgs(roomId: string, timestamp: number) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { timestamp, roomId },
+      data: { startTime, endTime, roomId },
     });
     return response;
   } catch (error) {
