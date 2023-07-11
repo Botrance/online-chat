@@ -16,7 +16,7 @@ export const request: RequestConfig = {
       const sessionToken = sessionStorage.getItem('token');
 
       let url = proxy + config.url;
-      
+
       if (sessionToken)
         return {
           ...config,
@@ -28,7 +28,12 @@ export const request: RequestConfig = {
       return { ...config, url: url };
     },
   ],
-  responseInterceptors: [],
+  responseInterceptors: [
+    (response) => {
+      console.log(response.data);
+      return response;
+    },
+  ],
 };
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
