@@ -80,7 +80,7 @@ module.exports = function (server) {
           try {
             if (roomId) {
               // 创建消息记录
-              const newMessage = await msgModel.create({
+              await msgModel.create({
                 id: generateRandomId(),
                 roomId: roomId,
                 sender: username,

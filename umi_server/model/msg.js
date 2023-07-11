@@ -2,7 +2,7 @@ const DB = require("../config/dbconfig"); // 导入数据库配置文件
 
 const { DataTypes } = require("sequelize");
 const msgModel = DB.define(
-  "message",
+  "msg",
   {
     // "message"是info数据库下的表，第一个参数是表名
     id: {
