@@ -197,6 +197,20 @@ router.post("/room/join", async (ctx) => {
     });
 
     if (room) {
+
+      // 检查用户是否已经加入了该房间
+      const existingUserRoom = await UserRoomModel.findOne({
+        where: {
+          roomId: room.roomId,
+          username: username,
+        },
+      });
+
+      if (existingUserRoom) {
+        ctx.body = { code: 110, msg: "User has already joined the room." };
+        return;
+      }
+
       // 创建关联记录
       await UserRoomModel.create({
         roomId: room.roomId,
