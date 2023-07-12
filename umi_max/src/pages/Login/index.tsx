@@ -15,7 +15,7 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Dispatch } from '@umijs/max';
+import { Dispatch, history } from '@umijs/max';
 import { connect, request, useNavigate } from '@umijs/max';
 import { Space, Tabs, message } from 'antd';
 import type { CSSProperties } from 'react';
@@ -54,7 +54,6 @@ interface LoginRes {
 //需要添加验证码功能
 const LoginBox: React.FC<LoginPageProps> = ({ dispatch, authModel, socketModel }) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
-  const navigate = useNavigate();
 
   console.log('loginPage render');
 
@@ -75,7 +74,7 @@ const LoginBox: React.FC<LoginPageProps> = ({ dispatch, authModel, socketModel }
         sessionStorage.setItem('token', response.token);
         await dispatch({ type: 'authModel/loginSuccess' });
         await dispatch({ type: 'socketModel/connect' });
-        navigate('/chat');
+        history.push('/chat');
       } else {
         sessionStorage.removeItem('token');
         await dispatch({
