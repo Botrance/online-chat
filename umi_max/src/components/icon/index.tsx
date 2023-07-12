@@ -6,11 +6,13 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from '@umijs/max';
+import { Avatar } from 'antd';
 
 export const AvatarIcon: React.FC<{ style?: React.CSSProperties }> = ({
   style,
 }) => {
   return <img src={avatar} alt="SVG Image" style={{ marginBottom: '10px' }} />;
+  return <Avatar icon={<UserOutlined />} />
 };
 
 export const ChatIcon: React.FC<{ style?: React.CSSProperties }> = ({
