@@ -106,6 +106,11 @@ const ChatPage: React.FC<ChatPageProps> = ({
     } else return [];
   };
 
+  const scrollToBottom = (containerClassName: string) => {
+    const container = document.getElementsByClassName(containerClassName)[0];
+    container.scrollTo(0, container.scrollHeight);
+  };
+
   useEffect(() => {
     const socket = socketModel.socket;
 
@@ -182,6 +187,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
         form.resetFields();
       }
     });
+    scrollToBottom('msg-container');
   };
 
   return (
@@ -207,19 +213,21 @@ const ChatPage: React.FC<ChatPageProps> = ({
           split="horizontal"
           direction="column"
         >
-          <ProCard style={{ height: '50px' }}>
-            {selectedRoomId ? getRoomNameById(selectedRoomId) : ''}
+          <ProCard style={{ height: '50px' }} ghost>
+            <div className="chat-title">
+              {selectedRoomId ? getRoomNameById(selectedRoomId) : ''}
+            </div>
           </ProCard>
 
-          <ProCard>
-            <div style={{ height: '280px' }}>
+          <ProCard ghost>
+            <div style={{ height: '300px' }} className="msg-container">
               <MsgList username={username} msgs={getMsgById(selectedRoomId)} />
             </div>
           </ProCard>
 
           <ProCard
             className="chat-box"
-            style={{ height: '190px', width: '100%' }}
+            style={{ height: '220px', width: '100%' }}
             ghost
           >
             <Form form={form}>
@@ -227,10 +235,11 @@ const ChatPage: React.FC<ChatPageProps> = ({
                 <Input.TextArea bordered={false} maxLength={5000} rows={4} />
               </Form.Item>
             </Form>
-            <Button className="chat-btn" type="primary" onClick={handleSubmit}>
-              发送
-            </Button>
           </ProCard>
+
+          <Button className="chat-btn" type="primary" onClick={handleSubmit}>
+            发送
+          </Button>
         </ProCard>
       </ProCard>
     </div>
