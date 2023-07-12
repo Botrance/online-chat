@@ -1,5 +1,5 @@
 export type friendType = any;
-export type roomType = any;
+export type roomType = { roomId: string; roomName: string; roomType: string };
 export type msgType = {
   id: string;
   sender: string;
@@ -16,6 +16,7 @@ export type tabType = {
   id: string;
   label: string;
 };
-export interface SoftTabProps{
-  tabs:tabType[]
+export interface SoftTabProps {
+  tabs: tabType[];
+  OnClick:(id:string)=>void
 }

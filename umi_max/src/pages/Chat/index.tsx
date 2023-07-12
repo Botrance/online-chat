@@ -1,14 +1,12 @@
-import { ProCard } from '@ant-design/pro-components';
-import { connect } from '@umijs/max';
-import { useEffect, useState } from 'react';
-
-import { msgType, roomType } from '@/global/define';
+import { MsgList, RoomList } from '@/components/mapList';
+import { SearchWithAdd } from '@/components/search/index';
+import { msgType } from '@/global/define';
 import { InfoModelState, loadFromStorage } from '@/models/infoModel';
 import { SocketModelState } from '@/models/socketModel';
-import { Dispatch } from '@umijs/max';
+import { ProCard } from '@ant-design/pro-components';
+import { Dispatch, connect } from '@umijs/max';
 import { Button, Form, Input } from 'antd';
-import React from 'react';
-import { SearchWithAdd } from '../../components/search/index';
+import React, { useEffect, useState } from 'react';
 import './index.less';
 
 interface ChatPageProps {
@@ -16,68 +14,6 @@ interface ChatPageProps {
   socketModel: SocketModelState;
   infoModel: InfoModelState;
 }
-
-interface RoomListProps {
-  rooms: roomType[];
-  selectedRoomId: string | null;
-  onRoomClick: (roomId: string) => void;
-}
-
-interface MsgListProps {
-  msgs: msgType[];
-  username: string | null;
-}
-
-const RoomList: React.FC<RoomListProps> = React.memo(
-  ({ rooms, selectedRoomId, onRoomClick }) => {
-    useEffect(() => {
-      if (!selectedRoomId && rooms.length > 0) {
-        onRoomClick(rooms[0].roomId);
-      }
-    }, [selectedRoomId, rooms, onRoomClick]);
-
-    return (
-      <>
-        {rooms.map((room) => (
-          <div
-            className="room-card"
-            key={room.roomId}
-            style={{
-              backgroundColor:
-                room.roomId === selectedRoomId
-                  ? 'rgb(235, 235, 235)'
-                  : 'rgb(248, 249, 249)',
-            }}
-            onClick={() => onRoomClick(room.roomId)}
-          >
-            {room.roomName}
-          </div>
-        ))}
-      </>
-    );
-  },
-);
-
-const MsgList: React.FC<MsgListProps> = React.memo(({ msgs, username }) => {
-  return (
-    <>
-      {msgs ? (
-        msgs.map((msg) => (
-          <div
-            key={msg.id}
-            className={`msg-card ${
-              msg.sender === username ? 'sent' : 'received'
-            }`}
-          >
-            {msg.message}
-          </div>
-        ))
-      ) : (
-        <></>
-      )}
-    </>
-  );
-});
 
 const ChatPage: React.FC<ChatPageProps> = ({
   dispatch,
@@ -200,7 +136,11 @@ const ChatPage: React.FC<ChatPageProps> = ({
           split="horizontal"
           direction="column"
         >
-          <ProCard className="pageCard-sider-top" style={{ height: '100px' }} ghost>
+          <ProCard
+            className="pageCard-sider-top"
+            style={{ height: '100px' }}
+            ghost
+          >
             <SearchWithAdd />
           </ProCard>
           <ProCard
@@ -222,7 +162,11 @@ const ChatPage: React.FC<ChatPageProps> = ({
           split="horizontal"
           direction="column"
         >
-          <ProCard className="pageCard-main-top" style={{ height: '50px' }} ghost>
+          <ProCard
+            className="pageCard-main-top"
+            style={{ height: '50px' }}
+            ghost
+          >
             <div className="pageCard-title">
               {selectedRoomId ? getRoomNameById(selectedRoomId) : ''}
             </div>
@@ -246,7 +190,11 @@ const ChatPage: React.FC<ChatPageProps> = ({
             </Form>
           </ProCard>
 
-          <Button className="pageCard-btn" type="primary" onClick={handleSubmit}>
+          <Button
+            className="pageCard-btn"
+            type="primary"
+            onClick={handleSubmit}
+          >
             发送
           </Button>
         </ProCard>

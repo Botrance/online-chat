@@ -15,7 +15,7 @@ const Tab: React.FC<TabProps> = ({ id, label, isSelected, onClick }) => {
 
   const tabStyle = {
     borderBottom: isSelected ? '2px solid rgb(30, 111, 255)' : 'none',
-    color: isSelected ? 'rgb(30, 111, 255)' : 'rgb(200, 200, 200)',
+    color: isSelected ? 'rgb(30, 111, 255)' : 'rgb(180, 180, 180)',
   };
 
   return (
@@ -25,12 +25,12 @@ const Tab: React.FC<TabProps> = ({ id, label, isSelected, onClick }) => {
   );
 };
 
-const SoftTab: React.FC<SoftTabProps> = ({ tabs }) => {
+const SoftTab: React.FC<SoftTabProps> = ({ tabs,OnClick }) => {
   const [selectedTab, setSelectedTab] = useState<string | null>(null);
 
   const handleTabClick = (id: string) => {
     setSelectedTab(id);
-    console.log(id);
+    OnClick(id);
   };
 
   return (
