@@ -1,6 +1,7 @@
 import { connect, history, Outlet } from '@umijs/max';
 import { useEffect, useState } from 'react';
 import styles from './index.less';
+import '@/global/global.less'
 import { Dispatch } from '@umijs/max';
 import { AuthModelState } from '@/models/authModel';
 
