@@ -51,7 +51,7 @@ const Sider: React.FC = () => {
             key={item.name}
             style={{
               fontSize: '20px',
-              marginTop: '20px',
+              marginTop: '30px',
               flexBasis: '100%',
               color: checkSelect(item.name),
             }}

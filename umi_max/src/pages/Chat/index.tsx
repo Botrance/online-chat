@@ -8,8 +8,8 @@ import { SocketModelState } from '@/models/socketModel';
 import { Dispatch } from '@umijs/max';
 import { Button, Form, Input } from 'antd';
 import React from 'react';
-import './index.less';
 import { SearchWithAdd } from '../../components/search/index';
+import './index.less';
 
 interface ChatPageProps {
   dispatch: Dispatch;
@@ -192,22 +192,19 @@ const ChatPage: React.FC<ChatPageProps> = ({
   };
 
   return (
-    <div className="chat-page-card" style={{ width: '100%', height: '100%' }}>
+    <div className="chat-pageCard" style={{ width: '100%', height: '100%' }}>
       <ProCard split="vertical">
         <ProCard
-          className="chat-sider"
+          className="pageCard-sider"
           colSpan="25%"
           split="horizontal"
           direction="column"
         >
-          <ProCard
-            className="chat-sider-top"
-            style={{ height: '50px' }}
-            ghost
-          >
-            <SearchWithAdd/>
+          <ProCard className="pageCard-sider-top" style={{ height: '100px' }} ghost>
+            <SearchWithAdd />
           </ProCard>
           <ProCard
+            className="pageCard-sider-bottom"
             style={{ backgroundColor: 'rgb(248, 249, 249)', zIndex: '100' }}
             ghost
           >
@@ -220,25 +217,25 @@ const ChatPage: React.FC<ChatPageProps> = ({
         </ProCard>
 
         <ProCard
-          className="chat-main"
+          className="pageCard-main"
           colSpan="75%"
           split="horizontal"
           direction="column"
         >
-          <ProCard className="chat-main-top" style={{ height: '50px' }} ghost>
-            <div className="chat-title">
+          <ProCard className="pageCard-main-top" style={{ height: '50px' }} ghost>
+            <div className="pageCard-title">
               {selectedRoomId ? getRoomNameById(selectedRoomId) : ''}
             </div>
           </ProCard>
 
-          <ProCard className="chat-main-middle" ghost>
+          <ProCard className="pageCard-main-middle" ghost>
             <div style={{ height: '340px' }} className="msg-container">
               <MsgList username={username} msgs={getMsgById(selectedRoomId)} />
             </div>
           </ProCard>
 
           <ProCard
-            className="chat-main-bottom"
+            className="pageCard-main-bottom"
             style={{ height: '220px', width: '100%' }}
             ghost
           >
@@ -249,7 +246,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
             </Form>
           </ProCard>
 
-          <Button className="chat-btn" type="primary" onClick={handleSubmit}>
+          <Button className="pageCard-btn" type="primary" onClick={handleSubmit}>
             发送
           </Button>
         </ProCard>
