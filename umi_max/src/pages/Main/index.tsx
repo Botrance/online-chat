@@ -1,9 +1,8 @@
-import { connect, history, Outlet } from '@umijs/max';
-import { useEffect, useState } from 'react';
-import styles from './index.less';
-import '@/global/global.less'
-import { Dispatch } from '@umijs/max';
+import '@/global/global.less';
 import { AuthModelState } from '@/models/authModel';
+import { connect, Dispatch, history, Outlet } from '@umijs/max';
+import { useEffect } from 'react';
+import styles from './index.less';
 
 interface MainPageProps {
   dispatch: Dispatch;
@@ -11,14 +10,12 @@ interface MainPageProps {
 }
 
 const MainPage: React.FC<MainPageProps> = ({ dispatch, authModel }) => {
-
   useEffect(() => {
     console.log('token:', authModel.auth, 'path:', history.location.pathname);
-    
   }, [history.location]);
 
   useEffect(() => {
-    const handlePopstate = (event: { preventDefault: () => void; }) => {
+    const handlePopstate = (event: { preventDefault: () => void }) => {
       const auth = authModel.auth;
 
       // 在这里执行权限检测逻辑
@@ -36,7 +33,6 @@ const MainPage: React.FC<MainPageProps> = ({ dispatch, authModel }) => {
       window.removeEventListener('popstate', handlePopstate);
     };
   }, []);
-
 
   return (
     <div className={styles['main-area']}>
