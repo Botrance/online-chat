@@ -9,6 +9,7 @@ import { Dispatch } from '@umijs/max';
 import { Button, Form, Input } from 'antd';
 import React from 'react';
 import './index.less';
+import { SearchWithAdd } from '../../components/search/index';
 
 interface ChatPageProps {
   dispatch: Dispatch;
@@ -193,8 +194,19 @@ const ChatPage: React.FC<ChatPageProps> = ({
   return (
     <div className="chat-page-card" style={{ width: '100%', height: '100%' }}>
       <ProCard split="vertical">
-        <ProCard colSpan="20%" split="horizontal" direction="column">
-          <ProCard style={{ height: '50px' }}></ProCard>
+        <ProCard
+          className="chat-sider"
+          colSpan="25%"
+          split="horizontal"
+          direction="column"
+        >
+          <ProCard
+            className="chat-sider-top"
+            style={{ height: '50px' }}
+            ghost
+          >
+            <SearchWithAdd/>
+          </ProCard>
           <ProCard
             style={{ backgroundColor: 'rgb(248, 249, 249)', zIndex: '100' }}
             ghost
@@ -208,25 +220,25 @@ const ChatPage: React.FC<ChatPageProps> = ({
         </ProCard>
 
         <ProCard
-          className="chat-main-area"
-          colSpan="80%"
+          className="chat-main"
+          colSpan="75%"
           split="horizontal"
           direction="column"
         >
-          <ProCard style={{ height: '50px' }} ghost>
+          <ProCard className="chat-main-top" style={{ height: '50px' }} ghost>
             <div className="chat-title">
               {selectedRoomId ? getRoomNameById(selectedRoomId) : ''}
             </div>
           </ProCard>
 
-          <ProCard ghost>
-            <div style={{ height: '300px' }} className="msg-container">
+          <ProCard className="chat-main-middle" ghost>
+            <div style={{ height: '340px' }} className="msg-container">
               <MsgList username={username} msgs={getMsgById(selectedRoomId)} />
             </div>
           </ProCard>
 
           <ProCard
-            className="chat-box"
+            className="chat-main-bottom"
             style={{ height: '220px', width: '100%' }}
             ghost
           >
