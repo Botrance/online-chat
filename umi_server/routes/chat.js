@@ -302,6 +302,7 @@ router.post("/msg/query", async (ctx) => {
     // 查询数据表中满足条件的消息
     const messages = await msgModel.findAll({
       where: query,
+      order: [['timestamp', 'ASC']],
     });
 
     // 构造结果对象数组
