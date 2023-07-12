@@ -12,7 +12,10 @@ export type resType = {
   msg: string;
   [propName: string]: any;
 };
-export type softTabType = {
+export type tabType = {
   id: string;
   label: string;
 };
+export interface SoftTabProps{
+  tabs:tabType[]
+}
