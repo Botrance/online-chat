@@ -276,11 +276,82 @@ router.post("/room/leave", async (ctx) => {
 
 router.post("/friend/query", async (ctx) => {
   try {
-    const friends = ["Botrance", "fushizhang"];
+    const { username, timestamp } = ctx.request.body;
+
+    if (timestamp) {
+      // 根据用户名和时间戳查询用户信息
+      const user = await userModel.findOne({
+        where: {
+          username: username,
+          friendUpdate: {
+            [Op.gte]: timestamp,
+          },
+        },
+      });
+
+      if (user) {
+        ctx.body = { code: 102, msg: "Friend list never changed." };
+        return;
+      }
+    }
+
+    // 根据用户名查询关联记录
+    const userFriends = await UserUserModel.findAll({
+      where: {
+        majorName: username,
+      },
+      attributes: ["minorName"],
+    });
+
+    // 获取好友列表
+    const friends = userFriends.map((userFriend) => userFriend.minorName);
+
     ctx.body = { code: 100, msg: "Query successful.", friends };
   } catch (error) {
     console.error(error);
     ctx.body = { code: 101, msg: "Failed to query friends." };
+  }
+});
+
+router.post("/friend/add", async (ctx) => {
+  try {
+    const { majorName, minorName, timestamp } = ctx.request.body;
+
+    // 更新 user 表的 friendUpdate 字段
+    await userModel.update(
+      { friendUpdate: timestamp },
+      { where: { username: majorName } }
+    );
+
+    // 创建关联记录
+    await UserUserModel.create({ majorName, minorName });
+
+    ctx.body = { code: 100, msg: "Friend added successfully." };
+  } catch (error) {
+    console.error(error);
+    ctx.body = { code: 101, msg: "Failed to add friend." };
+  }
+});
+
+router.post("/friend/delete", async (ctx) => {
+  try {
+    const { majorName, minorName, timestamp } = ctx.request.body;
+
+    // 更新 user 表的 friendUpdate 字段
+    await userModel.update(
+      { friendUpdate: timestamp },
+      { where: { username: majorName } }
+    );
+
+    // 删除关联记录
+    await UserUserModel.destroy({
+      where: { majorName, minorName },
+    });
+
+    ctx.body = { code: 100, msg: "Friend deleted successfully." };
+  } catch (error) {
+    console.error(error);
+    ctx.body = { code: 101, msg: "Failed to delete friend." };
   }
 });
 
@@ -302,7 +373,7 @@ router.post("/msg/query", async (ctx) => {
     // 查询数据表中满足条件的消息
     const messages = await msgModel.findAll({
       where: query,
-      order: [['timestamp', 'ASC']],
+      order: [["timestamp", "ASC"]],
     });
 
     // 构造结果对象数组

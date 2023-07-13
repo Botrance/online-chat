@@ -2,12 +2,14 @@ const msgModel = require("../model/msg"); // 导入消息模型
 const userModel = require("../model/user"); // 导入用户模型
 const roomModel = require("../model/room"); // 导入房间模型
 const UserRoomModel = require("../model/related/UserRoom"); // 导入关联表模型
+const UserUserModel = require("../model/related/UserUser"); // 导入关联表模型
 
 const models = {
   user: userModel,
   message: msgModel,
   room: roomModel,
   UserRoom: UserRoomModel,
+  UserUser: UserUserModel,
 };
 const { DataTypes } = require("sequelize");
 
@@ -43,6 +45,23 @@ const defineAssociations = function () {
   });
   roomModel.hasMany(UserRoomModel, {
     foreignKey: { name: "roomId", type: DataTypes.STRING(64) },
+  });
+
+  UserUserModel.belongsTo(userModel, {
+    foreignKey: { name: "majorName", type: DataTypes.STRING(64) },
+  });
+  UserUserModel.belongsTo(userModel, {
+    foreignKey: { name: "minorName", type: DataTypes.STRING(64) },
+  });
+  userModel.belongsToMany(userModel, {
+    through: UserUserModel,
+    foreignKey: "majorName",
+    as: "Majors",
+  });
+  userModel.belongsToMany(userModel, {
+    through: UserUserModel,
+    foreignKey: "minorName",
+    as: "Minors",
   });
 };
 
