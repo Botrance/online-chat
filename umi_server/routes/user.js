@@ -15,92 +15,68 @@ router.post("/token", async (ctx) => {
   await verify(ctx.request, ctx.response);
 });
 
-router.post("/register", async (ctx) => {
+router.post('/register', async (ctx) => {
   const { request, response } = ctx;
-  let { username, password } = request.body;
+  const { username, password } = request.body;
 
-  let id = "";
-  let isInclude = false;
-  let retryCount = 0;
-  const maxRetries = 3;
-
-  const generateUniqueUUID = async () => {
-    let uuid_id = crypto.randomUUID();
+  try {
+    // 查找具有给定用户名的用户
     const existingUser = await userModel.findOne({
-      where: {
-        id: uuid_id,
-      },
-    });
-    if (existingUser) {
-      if (retryCount >= maxRetries) {
-        response.body = {
-          code: 101,
-          msg: "Register failed, something wrong , plaese retry!",
-        };
-        throw new Error("Failed to generate a unique UUID.");
-      }
-      retryCount++;
-      return generateUniqueUUID();
-    }
-    return uuid_id;
-  };
-
-  await userModel
-    .findAll({
       where: {
         username: username,
       },
-    })
-    .then((result) => {
-      if (result && result.length) {
-        response.body = {
-          code: 110,
-          msg: "Username cannot be same",
-        };
-        isInclude = true;
-      } else {
-        return generateUniqueUUID();
-      }
-    })
-    .then((uuid_id) => {
-      if (!isInclude) {
-        id = uuid_id;
-
-        // 创建MD5对象
-        let md5 = crypto.createHash("md5");
-        // 对密码进行加密，"hex"表示密码是十六进制的字符串
-        let newPwd = md5.update(password).digest("hex");
-
-        console.log(username, newPwd);
-
-        return userModel.create({
-          id: id,
-          username: username,
-          password: newPwd,
-        });
-      }
-    })
-    .then((result) => {
-      if (result) {
-        // 创建成功后传递的数据
-        console.log("Register success");
-        response.body = {
-          code: 100,
-          msg: "Register success",
-        };
-      }
-    })
-    .catch((err) => {
-      console.log("Register failed");
-      console.log(err);
-      if (!isInclude) {
-        response.body = {
-          code: 101,
-          msg: "Register failed",
-        };
-      }
     });
+
+    // 如果用户存在
+    if (existingUser) {
+      response.body = {
+        code: 110,
+        msg: '用户名不能重复',
+      };
+      return;
+    }
+
+    // 如果用户不存在，则创建一个新用户并分配下一个可用 ID
+    const lastUser = await userModel.findOne({
+      order: [['id', 'DESC']],
+    });
+
+    const nextId = lastUser ? lastUser.id + 1 : 10000;
+
+    // 使用给定的用户名和密码创建一个新的用户
+    const md5 = crypto.createHash('md5');
+    const newPwd = md5.update(password).digest('hex');
+
+    const newUser = await userModel.create({
+      id: nextId,
+      username: username,
+      password: newPwd,
+    });
+
+    // 如果用户创建成功
+    if (newUser) {
+      console.log('注册成功');
+      response.body = {
+        code: 100,
+        msg: '注册成功',
+      };
+    } else {
+      console.log('注册失败');
+      response.body = {
+        code: 101,
+        msg: '注册失败',
+      };
+    }
+  } catch (err) {
+    console.log('注册失败');
+    console.log(err);
+    response.body = {
+      code: 101,
+      msg: '注册失败',
+    };
+  }
 });
+
 
 router.post("/login", async (ctx) => {
   const { request, response } = ctx;

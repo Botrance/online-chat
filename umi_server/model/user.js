@@ -7,7 +7,7 @@ const userModel = DB.define(
   {
     // "user"是info数据库下的表，第一个参数是表名
     id: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.BIGINT,
       primaryKey: true, // 主键
       unique: true, // 唯一的键
     },
