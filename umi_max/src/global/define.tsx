@@ -21,3 +21,7 @@ export interface SoftTabProps {
   defaultTab:string;
   OnClick:(id:string)=>void
 }
+export type ItemType =any;
+export interface AddMenuProps{
+  items:ItemType[]
+}
