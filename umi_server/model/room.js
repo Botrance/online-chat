@@ -5,7 +5,7 @@ const roomModel = DB.define(
   "room",
   {
     roomId: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.BIGINT,
       primaryKey: true, // 主键
       unique: true, // 唯一的键
       allowNull: false,

@@ -15,7 +15,7 @@
 将 jwt 的生成与鉴别部分分离出来，  
 为 koa 路由建立 routes 文件夹 ，分离路由 auth 作为账号管理。  
 建立 login 和 register 的接口使用 Postman 调试可用性，建立 auth 表 ，
-auth 表结构为（id，username，password），使用 postman 进行注册登录，      
+auth 表结构为（id，accountName，password），使用 postman 进行注册登录，      
 在 mysql 中查看表是否符合要求，查看服务器 console 是否正确，查看响应头是否返回正确code 。
 code：{100：成功，101：失败，110：参数导致错误，111：参数不合法}  
 id 和 密码使用 crypto 的 md5 进行加密。  
@@ -104,3 +104,4 @@ todo:
 18. 添加删除好友
 19. 账号管理
 20. 帮助
+21. 注册成功与失败添加反馈
