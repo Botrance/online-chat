@@ -27,6 +27,11 @@ export default defineConfig({
           component: './Login',
         },
         {
+          name: '注册页面',
+          path: '/register',
+          component: './Register',
+        },
+        {
           path: '/',
           component: '@/components/home',
           wrappers: ['@/utils/auth'],

@@ -15,13 +15,12 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Dispatch, history } from '@umijs/max';
-import { connect, request, useNavigate } from '@umijs/max';
+import { Dispatch, connect, history, request } from '@umijs/max';
 import { Space, Tabs, message } from 'antd';
 import type { CSSProperties } from 'react';
 import React, { useState } from 'react';
 
-type LoginType = 'phone' | 'account';
+type LoginType = 'phone' | 'account' | 'register';
 
 const iconStyles: CSSProperties = {
   marginInlineStart: '16px',
@@ -39,7 +38,7 @@ const tabItem = [
 interface LoginPageProps {
   dispatch: Dispatch;
   authModel: AuthModelState;
-  socketModel:SocketModelState
+  socketModel: SocketModelState;
 }
 interface LoginParams {
   username: string;
@@ -52,7 +51,11 @@ interface LoginRes {
   id: string;
 }
 //需要添加验证码功能
-const LoginBox: React.FC<LoginPageProps> = ({ dispatch, authModel, socketModel }) => {
+const LoginBox: React.FC<LoginPageProps> = ({
+  dispatch,
+  authModel,
+  socketModel,
+}) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
 
   console.log('loginPage render');
@@ -95,12 +98,24 @@ const LoginBox: React.FC<LoginPageProps> = ({ dispatch, authModel, socketModel }
           title="Chat-OL"
           subTitle="网上聊天室"
           actions={
-            <Space>
-              其他登录方式
-              <AlipayCircleOutlined style={iconStyles} />
-              <TaobaoCircleOutlined style={iconStyles} />
-              <WeiboCircleOutlined style={iconStyles} />
-            </Space>
+            <>
+              <div style={{ float: 'right' }}>
+                没有账号?点击
+                <a
+                  onClick={() => {
+                    history.push('/register');
+                  }}
+                >
+                  注册
+                </a>!
+              </div>
+              <Space>
+                其他登录方式
+                <AlipayCircleOutlined style={iconStyles} />
+                <TaobaoCircleOutlined style={iconStyles} />
+                <WeiboCircleOutlined style={iconStyles} />
+              </Space>
+            </>
           }
         >
           <Tabs
