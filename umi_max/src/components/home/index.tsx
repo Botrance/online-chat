@@ -74,7 +74,7 @@ const HomePage: React.FC<HomePageProps> = ({
   useEffect(() => {
     dispatch({
       type: 'infoModel/getFriends',
-      payload: { username: username },
+      payload: { username: username, timestamp: Date.now() },
     });
     dispatch({
       type: 'infoModel/getRooms',

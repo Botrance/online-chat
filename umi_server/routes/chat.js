@@ -8,6 +8,7 @@ const userModel = require("../model/user"); // 导入数据库模型
 const msgModel = require("../model/msg"); // 导入数据库模型
 const roomModel = require("../model/room"); // 导入数据库模型
 const UserRoomModel = require("../model/related/UserRoom"); // 导入关联表模型
+const UserUserModel = require("../model/related/UserUser"); // 导入关联表模型
 
 router.get("/test", (ctx) => {
   ctx.type = "html";

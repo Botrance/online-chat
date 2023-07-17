@@ -18,5 +18,6 @@ export type tabType = {
 };
 export interface SoftTabProps {
   tabs: tabType[];
+  defaultTab:string;
   OnClick:(id:string)=>void
 }

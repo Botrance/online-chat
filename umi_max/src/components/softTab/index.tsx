@@ -25,8 +25,8 @@ const Tab: React.FC<TabProps> = ({ id, label, isSelected, onClick }) => {
   );
 };
 
-const SoftTab: React.FC<SoftTabProps> = ({ tabs,OnClick }) => {
-  const [selectedTab, setSelectedTab] = useState<string | null>(null);
+const SoftTab: React.FC<SoftTabProps> = ({ tabs, OnClick, defaultTab }) => {
+  const [selectedTab, setSelectedTab] = useState<string | null>(defaultTab);
 
   const handleTabClick = (id: string) => {
     setSelectedTab(id);
@@ -34,7 +34,7 @@ const SoftTab: React.FC<SoftTabProps> = ({ tabs,OnClick }) => {
   };
 
   return (
-    <div style={{width: '230px', height: '40px'}} className='flex-center'>
+    <div style={{ width: '230px', height: '40px' }} className="flex-center">
       {tabs ? (
         tabs.map((tab) => (
           <Tab

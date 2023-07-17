@@ -13,7 +13,7 @@ export interface InfoModelType {
   state: InfoModelState;
   effects: {
     getFriends: (
-      action: { payload: { username: string } },
+      action: { payload: { username: string; timestamp: number } },
       effects: EffectsCommandMap,
     ) => Generator<any, void, { friends: any[] }>;
     getRooms: (
@@ -75,11 +75,15 @@ const InfoModel: InfoModelType = {
     markMsgs: loadFromStorage<markMsgType[]>('infoModel.markMsgs') || [],
   },
   effects: {
-    *getFriends({ payload }: { payload: { username: string } }, { call, put }) {
-      const { username } = payload;
+    *getFriends(
+      { payload }: { payload: { username: string; timestamp: number } },
+      { call, put },
+    ) {
+      const { username, timestamp } = payload;
       const response: { friends: friendType[] } = yield call(
         queryFriends,
         username,
+        timestamp
       );
       yield put({ type: 'saveFriends', payload: response.friends });
     },

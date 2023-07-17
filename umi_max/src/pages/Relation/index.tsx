@@ -60,7 +60,7 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
               }}
               className="flex-center"
             >
-              <SoftTab tabs={tabs} OnClick={handleTabClick} />
+              <SoftTab tabs={tabs} defaultTab={'1'} OnClick={handleTabClick} />
             </div>
           </ProCard>
 

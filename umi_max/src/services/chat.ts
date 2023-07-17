@@ -1,6 +1,6 @@
 import { request } from '@umijs/max';
 
-export async function queryFriends() {
+export async function queryFriends(username: string, timestamp: number) {
   try {
     console.log('Sending request: queryFriends');
     const response = await request('/api/chat/friend/query', {
@@ -8,6 +8,7 @@ export async function queryFriends() {
       headers: {
         'Content-Type': 'application/json',
       },
+      data: { timestamp, username },
     });
     return response;
   } catch (error) {
