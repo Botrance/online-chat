@@ -43,7 +43,7 @@ module.exports = function (server) {
 
         // 加入房间
 
-        socket.on("joinRoom", async ({ roomId, username }) => {
+        socket.on("joinRoom", async ({ roomId, username, timestamp }) => {
           try {
             if (roomId) {
               // 根据 roomId 加入房间
@@ -55,6 +55,18 @@ module.exports = function (server) {
                   code: 100,
                   msg: "joinRoom success",
                 });
+
+                await UserRoomModel.update(
+                  {
+                    msgView: timestamp,
+                  },
+                  {
+                    where: {
+                      roomId: roomId,
+                      username: username,
+                    },
+                  }
+                );
               } else {
                 console.log(`Room ${roomId} does not exist.`);
                 socket.emit("resMsg", {
@@ -76,37 +88,50 @@ module.exports = function (server) {
         });
 
         // 发送消息
-        socket.on("sendMessage", async ({ roomId, username, message, timestamp }) => {
-          try {
-            if (roomId) {
-              // 创建消息记录
-              await msgModel.create({
-                id: generateRandomId(),
-                roomId: roomId,
-                sender: username,
-                message: message,
-                timestamp: timestamp,
-              });
+        socket.on(
+          "sendMessage",
+          async ({ roomId, username, message, timestamp }) => {
+            try {
+              if (roomId) {
+                // 创建消息记录
+                await msgModel.create({
+                  id: generateRandomId(),
+                  roomId: roomId,
+                  sender: username,
+                  message: message,
+                  timestamp: timestamp,
+                });
 
-              // 在房间内广播消息
-              io.to(roomId).emit("message", { updateMsg: "newMsg" });
-            } else {
-              console.log("Invalid sendMessage request. RoomId is missing.");
-              socket.emit("resMsg", {
-                code: 110,
-                msg: "Invalid sendMessage request. RoomId is missing.",
-              });
+                await roomModel.update(
+                  {
+                    msgUpdate: timestamp,
+                  },
+                  {
+                    where: {
+                      roomId: roomId,
+                    },
+                  }
+                );
+
+                // 在房间内广播消息
+                io.to(roomId).emit("message", { updateMsg: "newMsg" });
+              } else {
+                console.log("Invalid sendMessage request. RoomId is missing.");
+                socket.emit("resMsg", {
+                  code: 110,
+                  msg: "Invalid sendMessage request. RoomId is missing.",
+                });
+              }
+            } catch (error) {
+              console.error(error);
+              socket.emit("resMsg", { code: 101, msg: "Server error." });
             }
-          } catch (error) {
-            console.error(error);
-            socket.emit("resMsg", { code: 101, msg: "Server error." });
           }
-        });
+        );
 
         // 离开房间
         socket.on("leaveRoom", async ({ roomId, username }) => {
           try {
-
             socket.leave(roomId);
             console.log(`User ${username} left room ${roomId}`);
             socket.emit("resMsg", {

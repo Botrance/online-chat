@@ -18,6 +18,10 @@ const UserRoomModel = DB.define(
       type: DataTypes.STRING(64),
       allowNull: false,
     },
+    msgView: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+    },
   },
   {
     freezeTableName: true, // 使用自定义表名

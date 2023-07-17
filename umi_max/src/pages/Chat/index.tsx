@@ -68,6 +68,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
       socket.emit('joinRoom', {
         username: username,
         roomId: selectedRoomId,
+        timestamp: Date.now(),
       });
 
       socket.on('message', (response: { updateMsg: string }) => {
