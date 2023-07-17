@@ -1,6 +1,5 @@
 import { ProForm } from '@ant-design/pro-components';
 import { connect, history, request } from '@umijs/max';
-import type { CascaderProps } from 'antd';
 import { Button, Checkbox, Form, Input, Select } from 'antd';
 import React from 'react';
 import './index.less'
@@ -21,7 +20,7 @@ const RegisterPage: React.FC = () => {
       },
     }).then(async function (response) {
       console.log(response.msg);
-      history.push('/register');
+      history.push('/login');
     });
   };
 
