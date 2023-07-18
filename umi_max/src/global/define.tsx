@@ -18,10 +18,6 @@ export type tabType = {
 };
 export interface SoftTabProps {
   tabs: tabType[];
-  defaultTab:string;
-  OnClick:(id:string)=>void
-}
-export type ItemType =any;
-export interface AddMenuProps{
-  items:ItemType[]
+  defaultTab: string;
+  OnClick: (id: string) => void;
 }
