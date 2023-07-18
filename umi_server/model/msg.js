@@ -12,7 +12,7 @@ const msgModel = DB.define(
     },
     roomId: {
       primaryKey: true,
-      type: DataTypes.STRING(64),
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
     sender: {
