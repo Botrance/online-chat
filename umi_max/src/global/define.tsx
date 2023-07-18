@@ -17,7 +17,9 @@ export type tabType = {
   label: string;
 };
 export interface SoftTabProps {
+  style?:React.CSSProperties;
+  childStyle?:React.CSSProperties;
   tabs: tabType[];
   defaultTab: string;
-  OnClick: (id: string) => void;
+  OnClick?: (id: string) => void;
 }
