@@ -69,7 +69,12 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
             style={{ backgroundColor: 'rgb(248, 249, 249)', zIndex: '100' }}
             ghost
           >
-            {selectedTabId === '2' && (
+            <div
+              style={{
+                overflowY: 'auto',
+                display: selectedTabId === '2' ? '' : 'none',
+              }}
+            >
               <RoomList
                 rooms={infoModel.rooms.filter((value: roomType) => {
                   return value.roomType === 'public';
@@ -77,7 +82,7 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
                 selectedRoomId={selectedRoomId}
                 onRoomClick={handleRoomClick}
               />
-            )}
+            </div>
           </ProCard>
         </ProCard>
 

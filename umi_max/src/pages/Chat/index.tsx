@@ -3,7 +3,7 @@ import { SearchWithAdd } from '@/components/search/index';
 import { msgType } from '@/global/define';
 import { InfoModelState, loadFromStorage } from '@/models/infoModel';
 import { SocketModelState } from '@/models/socketModel';
-import { ProCard } from '@ant-design/pro-components';
+import { ProCard, ProForm } from '@ant-design/pro-components';
 import { Dispatch, connect } from '@umijs/max';
 import { Button, Form, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
@@ -149,11 +149,13 @@ const ChatPage: React.FC<ChatPageProps> = ({
             style={{ backgroundColor: 'rgb(248, 249, 249)', zIndex: '100' }}
             ghost
           >
-            <RoomList
-              rooms={infoModel.rooms}
-              selectedRoomId={selectedRoomId}
-              onRoomClick={handleRoomClick}
-            />
+            <div style={{ overflowY: 'auto' }}>
+              <RoomList
+                rooms={infoModel.rooms}
+                selectedRoomId={selectedRoomId}
+                onRoomClick={handleRoomClick}
+              />
+            </div>
           </ProCard>
         </ProCard>
 
