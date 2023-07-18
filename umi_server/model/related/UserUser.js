@@ -18,6 +18,7 @@ const UserUserModel = DB.define(
   {
     freezeTableName: true, // 使用自定义表名
     timestamps: false, // 不使用时间戳
+    indexes: [{ fields: ["majorName","minorName"] }],
   }
 );
 

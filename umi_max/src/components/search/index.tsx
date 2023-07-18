@@ -4,6 +4,7 @@ import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Modal } from 'antd';
 import { useRef, useState } from 'react';
 import './index.less';
+import { matchFriends, matchRooms } from '@/services/chat';
 
 const tabs: tabType[] = [
   { id: '1', label: '找好友' },
@@ -48,6 +49,21 @@ export const SearchWithAdd: React.FC = () => {
 
   const handleTabClick = (id: string) => {
     setSelectedTabId(id);
+  };
+
+  const handleSubmit = () => {
+    form.validateFields().then((values) => {
+      const {friend,room} = values;
+      
+      if(room){
+        matchRooms(room);
+      }else if(friend){
+        matchFriends(friend);
+      }
+
+      form.resetFields();
+     
+    });
   };
 
   return (
@@ -148,6 +164,7 @@ export const SearchWithAdd: React.FC = () => {
               width: '70px',
             }}
             type="primary"
+            onClick={handleSubmit}
           >
             查找
           </Button>

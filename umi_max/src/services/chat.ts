@@ -58,3 +58,39 @@ export async function queryMsgs(
     return [];
   }
 }
+
+// 匹配好友
+export async function matchFriends(matchStr: string) {
+  try {
+    console.log('Sending request: matchFriends');
+    const response = await request('/api/chat/friend/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { username: matchStr }, // 使用matchStr作为用户名进行匹配
+    });
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch friends:', error);
+    return [];
+  }
+}
+
+// 匹配房间
+export async function matchRooms(matchStr: string) {
+  try {
+    console.log('Sending request: matchRooms');
+    const response = await request('/api/chat/room/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { roomName: matchStr }, // 使用matchStr作为房间名进行匹配
+    });
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch rooms:', error);
+    return [];
+  }
+}
