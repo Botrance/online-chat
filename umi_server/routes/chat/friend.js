@@ -10,7 +10,6 @@ router.get("/test", (ctx) => {
   ctx.body = "<h1>test</h1>";
 });
 
-// 好友查询
 router.post("/query", async (ctx) => {
   try {
     const { userId, timestamp } = ctx.request.body;
@@ -40,17 +39,24 @@ router.post("/query", async (ctx) => {
       attributes: ["minorId"],
     });
 
-    // 获取好友的用户名
-    const friendIds = userFriends.map((userFriend) => userFriend.minorId);
-    const friends = await userModel.findAll({
-      where: {
-        userId: friendIds,
-      },
-      attributes: ["userId", "userName"], // 指定要查询的字段
-    });
+    if (userFriends.length > 0) {
+      // 获取好友的用户ID数组
+      const friendIds = userFriends.map((userFriend) => userFriend.minorId);
 
-    if (friends.length > 0) {
-      ctx.body = { code: 100, msg: "Query successful.", friends: friends };
+      // 调用缓存函数，获取 userId 和对应的 userName 的映射
+      const userNameMap = await ctx.cacheUserNames(friendIds);
+
+      // 将查询到的 userName 添加到返回结果中
+      const friendsWithUserName = userFriends.map((userFriend) => ({
+        userId: userFriend.minorId,
+        userName: userNameMap[userFriend.minorId],
+      }));
+
+      ctx.body = {
+        code: 100,
+        msg: "Query successful.",
+        friends: friendsWithUserName,
+      };
     } else {
       ctx.body = { code: 110, msg: "No friends found for the user." };
     }
@@ -59,6 +65,7 @@ router.post("/query", async (ctx) => {
     ctx.body = { code: 101, msg: "Failed to query friends." };
   }
 });
+
 // 添加好友
 router.post("/add", async (ctx) => {
   try {
