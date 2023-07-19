@@ -14,7 +14,7 @@ interface MsgListProps {
 
 interface FriendListProps {
   friends: friendType[];
-  selectedFriendName: string | null;
+  selectedFriendId: string | null;
   onFriendClick: (roomId: string) => void;
 }
 
@@ -72,23 +72,23 @@ export const MsgList: React.FC<MsgListProps> = React.memo(
 );
 
 export const FriendList: React.FC<FriendListProps> = React.memo(
-  ({ friends, selectedFriendName, onFriendClick }) => {
+  ({ friends, selectedFriendId, onFriendClick }) => {
     return (
       <>
         {friends ? (
           friends.map((friend) => (
             <div
-              className="room-card"
-              key={friend.minorId}
+              className="friend-card"
+              key={friend.userId}
               style={{
                 backgroundColor:
-                  friend.minorId === selectedFriendName
+                  friend.userId === selectedFriendId
                     ? 'rgb(235, 235, 235)'
                     : 'rgb(248, 249, 249)',
               }}
-              onClick={() => onFriendClick(friend.minorId)}
+              onClick={() => onFriendClick(friend.userId)}
             >
-              {friend.minorId}
+              {friend.userName}
             </div>
           ))
         ) : (
