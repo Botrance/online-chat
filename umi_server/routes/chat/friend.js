@@ -71,26 +71,39 @@ router.post("/add", async (ctx) => {
   try {
     const { majorId, minorId, timestamp } = ctx.request.body;
 
-    // 使用事务保证原子操作
-    await DB.transaction(async (transaction) => {
-      // 更新 user 表的 friendUpdate 字段
-      await userModel.update(
-        { friendUpdate: timestamp ? timestamp : Date.now() },
-        {
-          where: { userId: { [Op.in]: [majorId, minorId] } },
-          transaction,
-        }
-      );
-
-      // 创建关联记录
-      await UserUserModel.create({ majorId, minorId }, { transaction });
-      await UserUserModel.create(
-        { majorId: minorId, minorId: majorId },
-        { transaction }
-      );
+    const isExistRelation = await UserUserModel.findAll({
+      where: {
+        [Op.or]: [
+          { majorId: majorId, minorId: minorId }, // 查询 majorId 和 minorId 相等的情况
+          { majorId: minorId, minorId: majorId }, // 查询 majorId 和 minorId 相反的情况
+        ],
+      },
     });
 
-    ctx.body = { code: 100, msg: "Friend added successfully." };
+    if (isExistRelation.length > 0 || majorId === minorId) {
+      ctx.body = { code: 110, msg: "You have been friends before." };
+    } else {
+      // 使用事务保证原子操作
+      await DB.transaction(async (transaction) => {
+        // 更新 user 表的 friendUpdate 字段
+        await userModel.update(
+          { friendUpdate: timestamp ? timestamp : Date.now() },
+          {
+            where: { userId: { [Op.in]: [majorId, minorId] } },
+            transaction,
+          }
+        );
+
+        // 创建关联记录
+        await UserUserModel.create({ majorId, minorId }, { transaction });
+        await UserUserModel.create(
+          { majorId: minorId, minorId: majorId },
+          { transaction }
+        );
+      });
+
+      ctx.body = { code: 100, msg: "Friend added successfully." };
+    }
   } catch (error) {
     console.error(error);
     ctx.body = { code: 101, msg: "Failed to add friend." };
