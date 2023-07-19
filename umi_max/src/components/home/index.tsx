@@ -69,7 +69,7 @@ const HomePage: React.FC<HomePageProps> = ({
 }) => {
   console.log('route home render');
 
-  const userId = sessionStorage.getItem('userId');
+  const userId = parseInt(sessionStorage.getItem('userId')!);
 
   useEffect(() => {
     dispatch({

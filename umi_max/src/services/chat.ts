@@ -68,7 +68,7 @@ export async function matchFriends(matchStr: string) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { matchStr: matchStr }, // 使用matchStr作为用户名进行匹配
+      data: { matchStr }, // 使用matchStr作为用户名进行匹配
     });
     return response;
   } catch (error) {
@@ -86,11 +86,29 @@ export async function matchRooms(matchStr: string) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { matchStr: matchStr }, // 使用matchStr作为房间名进行匹配
+      data: { matchStr }, // 使用matchStr作为房间名进行匹配
     });
     return response;
   } catch (error) {
     console.error('Failed to fetch rooms:', error);
+    return [];
+  }
+}
+
+// 添加好友
+export async function addFriend(majorId: number,minorId:number) {
+  try {
+    console.log('Sending request: addFriend');
+    const response = await request('/api/chat/friend/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { majorId,minorId }, // 使用matchStr作为房间名进行匹配
+    });
+    return response;
+  } catch (error) {
+    console.error('Failed to add friend:', error);
     return [];
   }
 }

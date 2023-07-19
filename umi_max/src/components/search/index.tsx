@@ -1,23 +1,30 @@
 import SoftTab from '@/components/softTab';
 import { tabType } from '@/global/define';
-import { matchFriends, matchRooms } from '@/services/chat';
+import { InfoModelState } from '@/models/infoModel';
+import { addFriend, matchFriends, matchRooms } from '@/services/chat';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { ProList } from '@ant-design/pro-components';
+import { Dispatch, connect } from '@umijs/max';
 import { Button, Form, Input, Modal, Space } from 'antd';
 import { useRef, useState } from 'react';
 import './index.less';
 
+const userId = parseInt(sessionStorage.getItem('userId')!);
 interface MixModalProps {
   modalOpen: string;
   setModalOpen: (type: string) => void;
+  dispatch: Dispatch;
+  infoModel: InfoModelState;
 }
 
 const tabs: tabType[] = [
   { id: '1', label: '找好友' },
   { id: '2', label: '找群' },
 ];
-
-const MatchList: React.FC<{ data: any; show: boolean }> = ({ data, show }) => {
+const MatchList: React.FC<{
+  data: any;
+  show: boolean;
+}> = ({ data, show }) => {
   return (
     <div
       style={{
@@ -44,7 +51,12 @@ const MatchList: React.FC<{ data: any; show: boolean }> = ({ data, show }) => {
   );
 };
 
-const MixModal: React.FC<MixModalProps> = ({ modalOpen, setModalOpen }) => {
+const PureMixModal: React.FC<MixModalProps> = ({
+  modalOpen,
+  setModalOpen,
+  infoModel,
+  dispatch,
+}) => {
   const [selectedTabId, setSelectedTabId] = useState<string>('1');
   const [form] = Form.useForm();
   const [dataUsers, setDataUsers] = useState<any[] | null>(null);
@@ -112,6 +124,18 @@ const MixModal: React.FC<MixModalProps> = ({ modalOpen, setModalOpen }) => {
                       <Button
                         size="small"
                         style={{ fontSize: '12px', width: '60px' }}
+                        onClick={() => {
+                          addFriend(userId, item.userId).then((result) => {
+                            if (result!.code === 100)
+                              dispatch({
+                                type: 'infoModel/getFriends',
+                                payload: {
+                                  userId: userId,
+                                  timestamp: Date.now(),
+                                },
+                              });
+                          });
+                        }}
                       >
                         加好友
                       </Button>
@@ -232,6 +256,8 @@ const MixModal: React.FC<MixModalProps> = ({ modalOpen, setModalOpen }) => {
     </>
   );
 };
+
+const MixModal = connect((state: any) => state)(PureMixModal);
 
 export const SearchWithAdd: React.FC = () => {
   const [modalOpen, setModalOpen] = useState('null');

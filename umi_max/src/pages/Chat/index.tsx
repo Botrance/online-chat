@@ -15,6 +15,10 @@ interface ChatPageProps {
   infoModel: InfoModelState;
 }
 
+// 从 sessionStorage 中获取用户名和 ID
+const userName = sessionStorage.getItem('userName');
+const userId = sessionStorage.getItem('userId');
+
 const ChatPage: React.FC<ChatPageProps> = ({
   dispatch,
   socketModel,
@@ -22,10 +26,6 @@ const ChatPage: React.FC<ChatPageProps> = ({
 }) => {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [form] = Form.useForm(); //后面请修改为状态管理，因为要暂留text
-
-  // 从 sessionStorage 中获取用户名和 ID
-  const userName = sessionStorage.getItem('userName');
-  const userId = sessionStorage.getItem('userId');
 
   const startTime = Date.now() - 24 * 60 * 60 * 1000; // 获取当前时间戳
   console.log('route chat render');
