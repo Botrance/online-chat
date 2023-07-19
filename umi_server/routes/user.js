@@ -17,13 +17,13 @@ router.post("/token", async (ctx) => {
 
 router.post("/register", async (ctx) => {
   const { request, response } = ctx;
-  const { username, password, timestamp } = request.body;
+  const { userName, password, timestamp } = request.body;
 
   try {
     // 查找具有给定用户名的用户
     const existingUser = await userModel.findOne({
       where: {
-        username: username,
+        userName: userName,
       },
     });
 
@@ -49,7 +49,7 @@ router.post("/register", async (ctx) => {
 
     const newUser = await userModel.create({
       userId: nextId,
-      username: username,
+      userName: userName,
       password: newPwd,
       roomUpdate: timestamp ? timestamp : Date.now(),
       friendUpdate: timestamp ? timestamp : Date.now(),
@@ -85,7 +85,7 @@ router.post("/register", async (ctx) => {
 router.post("/login", async (ctx) => {
   const { request, response } = ctx;
   // 获取对象中的用户名和密码
-  let { username, password } = request.body;
+  let { userName, password } = request.body;
   // 创建MD5对象
   let mds = crypto.createHash("md5");
   // 对密码进行加密，密码是十六进制的字符串
@@ -95,7 +95,7 @@ router.post("/login", async (ctx) => {
     .findAll({
       where: {
         // 查找用户名
-        username: username,
+        userName: userName,
       },
     })
     .then((data) => {
@@ -120,7 +120,7 @@ router.post("/login", async (ctx) => {
           console.log("Login failed");
           response.body = {
             code: 101,
-            msg: "Login failed, please check the username or the password",
+            msg: "Login failed, please check the userName or the password",
           };
         }
       } else {

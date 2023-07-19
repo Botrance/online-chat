@@ -138,7 +138,7 @@ router.post("/delete", async (ctx) => {
       });
 
       // 获取相关用户的Id
-      const usernames = userRooms.map((userRoom) => userRoom.userId);
+      const userNames = userRooms.map((userRoom) => userRoom.userId);
 
       // 更新这些用户的 roomUpdate 字段
       const currentTimeStamp = Date.now();
@@ -146,7 +146,7 @@ router.post("/delete", async (ctx) => {
         { roomUpdate: currentTimeStamp },
         {
           where: {
-            userId: usernames,
+            userId: userNames,
           },
           transaction,
         }
@@ -281,15 +281,15 @@ router.post("/match", async (ctx) => {
         where: {
           userId: parseInt(matchStr),
         },
-        attributes: ["userId", "username"],
+        attributes: ["userId", "userName"],
       });
     } else {
-      // 否则认为是根据 username 进行匹配
+      // 否则认为是根据 userName 进行匹配
       room = await userModel.findAll({
         where: {
-          username: matchStr,
+          userName: matchStr,
         },
-        attributes: ["userId", "username"],
+        attributes: ["userId", "userName"],
       });
     }
 

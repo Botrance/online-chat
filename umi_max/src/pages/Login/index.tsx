@@ -41,7 +41,7 @@ interface LoginPageProps {
   socketModel: SocketModelState;
 }
 interface LoginParams {
-  username: string;
+  userName: string;
   password: string;
 }
 interface LoginRes {
@@ -67,12 +67,12 @@ const LoginBox: React.FC<LoginPageProps> = ({
         'Content-Type': 'application/json',
       },
       data: {
-        username: values.username,
+        userName: values.userName,
         password: values.password,
       },
     }).then(async function (response: LoginRes) {
       if (response.code === 100) {
-        sessionStorage.setItem('username', values.username);
+        sessionStorage.setItem('userName', values.userName);
         sessionStorage.setItem('userId', response.userId);
         sessionStorage.setItem('token', response.token);
         await dispatch({ type: 'authModel/loginSuccess' });
@@ -127,7 +127,7 @@ const LoginBox: React.FC<LoginPageProps> = ({
           {loginType === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="userName"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined className={'prefixIcon'} />,

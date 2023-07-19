@@ -24,7 +24,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
   const [form] = Form.useForm(); //后面请修改为状态管理，因为要暂留text
 
   // 从 sessionStorage 中获取用户名和 ID
-  const username = sessionStorage.getItem('username');
+  const userName = sessionStorage.getItem('userName');
   const userId = sessionStorage.getItem('userId');
 
   const startTime = Date.now() - 24 * 60 * 60 * 1000; // 获取当前时间戳
@@ -177,7 +177,7 @@ const ChatPage: React.FC<ChatPageProps> = ({
 
           <ProCard className="pageCard-main-middle" ghost>
             <div style={{ height: '340px' }} className="msg-container">
-              <MsgList username={username} msgs={getMsgById(selectedRoomId)} />
+              <MsgList userName={userName} msgs={getMsgById(selectedRoomId)} />
             </div>
           </ProCard>
 

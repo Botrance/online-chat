@@ -8,14 +8,14 @@ const { Option } = Select;
 const RegisterPage: React.FC = () => {
   const [form] = Form.useForm();
 
-  const onSubmit = async (values: { username: any; password: any }) => {
+  const onSubmit = async (values: { userName: any; password: any }) => {
     request('/api/user/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       data: {
-        username: values.username,
+        userName: values.userName,
         password: values.password,
       },
     }).then(async function (response) {
@@ -47,7 +47,7 @@ const RegisterPage: React.FC = () => {
         submitter={false}
       >
         <ProForm.Item
-          name="username"
+          name="userName"
           label="用户名"
           rules={[
             { required: true, message: '请输入用户名', whitespace: true },

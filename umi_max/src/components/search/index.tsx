@@ -108,7 +108,7 @@ const MixModal: React.FC<MixModalProps> = ({ modalOpen, setModalOpen }) => {
                       }}
                     >
                       <span className="no-ellispe">id：{item.userId}</span>
-                      <span className="no-ellispe">{item.username}</span>
+                      <span className="no-ellispe">{item.userName}</span>
                       <Button
                         size="small"
                         style={{ fontSize: '12px', width: '60px' }}

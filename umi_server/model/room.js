@@ -10,6 +10,10 @@ const roomModel = DB.define(
       unique: true, // 唯一的键
       allowNull: false,
     },
+    majorId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+    },
     roomName: {
       type: DataTypes.STRING(64),
       allowNull: false,

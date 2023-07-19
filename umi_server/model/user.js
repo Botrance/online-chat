@@ -12,7 +12,7 @@ const userModel = DB.define(
       primaryKey: true, // 主键
       unique: true, // 唯一的键
     },
-    username: {
+    userName: {
       type: DataTypes.STRING(64),
       allowNull: false,
     },

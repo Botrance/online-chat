@@ -16,7 +16,7 @@ const msgModel = DB.define(
       allowNull: false,
     },
     sender: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
     message: {

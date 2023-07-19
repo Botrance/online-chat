@@ -9,7 +9,7 @@ interface RoomListProps {
 
 interface MsgListProps {
   msgs: msgType[];
-  username: string | null;
+  userName: string | null;
 }
 
 interface FriendListProps {
@@ -49,7 +49,7 @@ export const RoomList: React.FC<RoomListProps> = React.memo(
 );
 
 export const MsgList: React.FC<MsgListProps> = React.memo(
-  ({ msgs, username }) => {
+  ({ msgs, userName }) => {
     return (
       <>
         {msgs ? (
@@ -57,7 +57,7 @@ export const MsgList: React.FC<MsgListProps> = React.memo(
             <div
               key={msg.id}
               className={`msg-card ${
-                msg.sender === username ? 'sent' : 'received'
+                msg.sender === userName ? 'sent' : 'received'
               }`}
             >
               {msg.message}

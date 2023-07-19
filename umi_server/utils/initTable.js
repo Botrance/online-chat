@@ -15,7 +15,7 @@ const { DataTypes } = require("sequelize");
 
 const initTable = async function (name) {
   try {
-    await models[name].sync({force:true});
+    await models[name].sync();
     console.log(`Table ${name} initialized.`);
   } catch (error) {
     console.error(`Error initializing table ${name}:`, error);
