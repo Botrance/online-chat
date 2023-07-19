@@ -209,8 +209,8 @@ const LoginBox: React.FC<LoginPageProps> = ({
               marginBlockEnd: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              自动登录
+            <ProFormCheckbox noStyle name="remember password">
+              记住密码
             </ProFormCheckbox>
             <a
               style={{

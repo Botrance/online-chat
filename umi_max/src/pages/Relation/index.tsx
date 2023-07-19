@@ -1,4 +1,4 @@
-import { RoomList } from '@/components/mapList';
+import { FriendList, RoomList } from '@/components/mapList';
 import { SearchWithAdd } from '@/components/search';
 import SoftTab from '@/components/softTab';
 import { roomType, tabType } from '@/global/define';
@@ -21,8 +21,15 @@ const tabs: tabType[] = [
 const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
   console.log('route realtion render');
 
+  const [selectedFriendName, setSelectedFriendName] = useState<string | null>(
+    null,
+  );
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
+
+  const handleFriendClick = (minorName: string) => {
+    setSelectedFriendName(minorName);
+  };
 
   const handleRoomClick = (roomId: string) => {
     setSelectedRoomId(roomId);
@@ -69,6 +76,18 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
             style={{ backgroundColor: 'rgb(248, 249, 249)', zIndex: '100' }}
             ghost
           >
+            <div
+              style={{
+                overflowY: 'auto',
+                display: selectedTabId === '2' ? '' : 'none',
+              }}
+            >
+              <FriendList
+                friends={infoModel.friends}
+                selectedFriendName={selectedFriendName}
+                onFriendClick={handleFriendClick}
+              />
+            </div>
             <div
               style={{
                 overflowY: 'auto',

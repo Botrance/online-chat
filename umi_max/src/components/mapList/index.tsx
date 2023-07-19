@@ -72,19 +72,19 @@ export const MsgList: React.FC<MsgListProps> = React.memo(({ msgs, username }) =
 export const FriendList: React.FC<FriendListProps> = React.memo(({ friends,selectedFriendName, onFriendClick }) => {
   return (
     <>
-      {friends.map((room) => (
+      {friends.map((friend) => (
           <div
             className="room-card"
-            key={room.roomId}
+            key={friend.minorName}
             style={{
               backgroundColor:
-                room.roomId === selectedFriendName
+              friend.minorName === selectedFriendName
                   ? 'rgb(235, 235, 235)'
                   : 'rgb(248, 249, 249)',
             }}
-            onClick={() => onFriendClick(room.roomId)}
+            onClick={() => onFriendClick(friend.minorName)}
           >
-            {room.roomName}
+            {friend.minorName}
           </div>
         ))}
     </>
