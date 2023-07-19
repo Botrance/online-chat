@@ -39,8 +39,9 @@ router.post("/query", async (ctx) => {
       },
       attributes: ["minorName"],
     });
-
-    ctx.body = { code: 100, msg: "Query successful.", friends: userFriends };
+    if (userFriends.length > 0)
+      ctx.body = { code: 100, msg: "Query successful.", friends: userFriends };
+    else ctx.body = { code: 110, msg: "No friends found for the user." };
   } catch (error) {
     console.error(error);
     ctx.body = { code: 101, msg: "Failed to query friends." };
@@ -116,23 +117,23 @@ router.post("/delete", async (ctx) => {
 // 好友匹配
 router.post("/match", async (ctx) => {
   try {
-    const { id, username } = ctx.request.body;
+    const { matchStr } = ctx.request.body;
 
     let user;
 
-    if (id) {
-      // 根据 id 匹配用户
-      user = await userModel.findOne({
+    if (!isNaN(matchStr)) {
+      // 如果 matchStr 是一个合法的数字，认为是根据 id 进行匹配
+      user = await userModel.findAll({
         where: {
-          id: id,
+          id: parseInt(matchStr),
         },
         attributes: ["id", "username"],
       });
     } else {
-      // 根据 username 匹配用户
-      user = await userModel.findOne({
+      // 否则认为是根据 username 进行匹配
+      user = await userModel.findAll({
         where: {
-          username: username,
+          username: matchStr,
         },
         attributes: ["id", "username"],
       });

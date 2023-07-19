@@ -63,12 +63,12 @@ export async function queryMsgs(
 export async function matchFriends(matchStr: string) {
   try {
     console.log('Sending request: matchFriends');
-    const response = await request('/api/chat/friend/query', {
+    const response = await request('/api/chat/friend/match', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { username: matchStr }, // 使用matchStr作为用户名进行匹配
+      data: { matchStr: matchStr }, // 使用matchStr作为用户名进行匹配
     });
     return response;
   } catch (error) {
@@ -81,12 +81,12 @@ export async function matchFriends(matchStr: string) {
 export async function matchRooms(matchStr: string) {
   try {
     console.log('Sending request: matchRooms');
-    const response = await request('/api/chat/room/query', {
+    const response = await request('/api/chat/room/match', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { roomName: matchStr }, // 使用matchStr作为房间名进行匹配
+      data: { matchStr: matchStr }, // 使用matchStr作为房间名进行匹配
     });
     return response;
   } catch (error) {

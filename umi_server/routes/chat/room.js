@@ -23,10 +23,7 @@ router.post("/query", async (ctx) => {
     });
 
     // timestamp为空表示全量查询，user的room从未update也全量，update小于timestamp则不返回
-    if (
-      user &&
-      (!timestamp || user.roomUpdate >= timestamp)
-    ) {
+    if (user && (!timestamp || user.roomUpdate >= timestamp)) {
       let roomQuery = {
         username: username,
       };
@@ -51,8 +48,7 @@ router.post("/query", async (ctx) => {
       if (userRooms.length === 0) {
         ctx.body = { code: 110, msg: "No rooms found for the user." };
       } else {
-
-        ctx.body = { code: 100, msg: "Query successful.", rooms:userRooms };
+        ctx.body = { code: 100, msg: "Query successful.", rooms: userRooms };
       }
     } else {
       ctx.body = { code: 102, msg: "Room never changed" };
@@ -275,25 +271,25 @@ router.post("/leave", async (ctx) => {
 // 房间匹配
 router.post("/match", async (ctx) => {
   try {
-    const { roomId, roomName } = ctx.request.body;
+    const { matchStr } = ctx.request.body;
 
     let room;
 
-    if (roomId) {
-      // 根据 roomId 匹配房间
-      room = await roomModel.findOne({
+    if (!isNaN(matchStr)) {
+      // 如果 matchStr 是一个合法的数字，认为是根据 id 进行匹配
+      room = await userModel.findAll({
         where: {
-          roomId: roomId,
+          id: parseInt(matchStr),
         },
-        attributes: ["roomId", "roomName"],
+        attributes: ["id", "username"],
       });
     } else {
-      // 根据 roomName 匹配房间
-      room = await roomModel.findOne({
+      // 否则认为是根据 username 进行匹配
+      room = await userModel.findAll({
         where: {
-          roomName: roomName,
+          username: matchStr,
         },
-        attributes: ["roomId", "roomName"],
+        attributes: ["id", "username"],
       });
     }
 
