@@ -107,7 +107,7 @@ const MixModal: React.FC<MixModalProps> = ({ modalOpen, setModalOpen }) => {
                         overflow: 'hidden',
                       }}
                     >
-                      <span className="no-ellispe">id：{item.id}</span>
+                      <span className="no-ellispe">id：{item.userId}</span>
                       <span className="no-ellispe">{item.username}</span>
                       <Button
                         size="small"

@@ -6,7 +6,7 @@ const UserRoomModel = DB.define(
   "UserRoom",
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -14,8 +14,8 @@ const UserRoomModel = DB.define(
       type: DataTypes.STRING(64),
       allowNull: false,
     },
-    username: {
-      type: DataTypes.STRING(64),
+    userId: {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
     msgView: {
@@ -26,7 +26,7 @@ const UserRoomModel = DB.define(
   {
     freezeTableName: true, // 使用自定义表名
     timestamps: false, // 不使用时间戳
-    indexes: [{ fields: ["roomId","username"] }],
+    indexes: [{ fields: ["roomId","userId"] }],
   }
 );
 

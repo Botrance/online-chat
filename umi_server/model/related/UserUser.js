@@ -5,20 +5,25 @@ const { DataTypes } = require("sequelize");
 const UserUserModel = DB.define(
   "UserUser",
   {
-    majorName: {
-      type: DataTypes.STRING(64),
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    majorId: {
+      type: DataTypes.INTEGER.UNSIGNED,
       primaryKey: true,
       allowNull: false,
     },
-    minorName: {
-      type: DataTypes.STRING(64),
+    minorId: {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
   },
   {
     freezeTableName: true, // 使用自定义表名
     timestamps: false, // 不使用时间戳
-    indexes: [{ fields: ["majorName","minorName"] }],
+    indexes: [{ fields: ["majorId","minorId"] }],
   }
 );
 

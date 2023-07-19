@@ -13,19 +13,19 @@ router.get("/test", (ctx) => {
 // 查询房间列表
 router.post("/query", async (ctx) => {
   try {
-    const { username, timestamp, roomType } = ctx.request.body;
+    const { userId, timestamp, roomType } = ctx.request.body;
 
     // 查询用户的 roomUpdate 值
     const user = await userModel.findOne({
       where: {
-        username: username,
+        userId: userId,
       },
     });
 
     // timestamp为空表示全量查询，user的room从未update也全量，update小于timestamp则不返回
     if (user && (!timestamp || user.roomUpdate >= timestamp)) {
       let roomQuery = {
-        username: username,
+        userId: userId,
       };
 
       if (roomType === "private") {
@@ -137,8 +137,8 @@ router.post("/delete", async (ctx) => {
         transaction,
       });
 
-      // 获取相关用户的用户名
-      const usernames = userRooms.map((userRoom) => userRoom.username);
+      // 获取相关用户的Id
+      const usernames = userRooms.map((userRoom) => userRoom.userId);
 
       // 更新这些用户的 roomUpdate 字段
       const currentTimeStamp = Date.now();
@@ -146,7 +146,7 @@ router.post("/delete", async (ctx) => {
         { roomUpdate: currentTimeStamp },
         {
           where: {
-            username: usernames,
+            userId: usernames,
           },
           transaction,
         }
@@ -169,13 +169,13 @@ router.post("/delete", async (ctx) => {
 
 // 加入房间
 router.post("/join", async (ctx) => {
-  const { username, roomId } = ctx.request.body;
+  const { userId, roomId } = ctx.request.body;
 
   try {
     // 查询用户是否存在
     const user = await userModel.findOne({
       where: {
-        username: username,
+        userId: userId,
       },
     });
 
@@ -195,7 +195,7 @@ router.post("/join", async (ctx) => {
       const existingUserRoom = await UserRoomModel.findOne({
         where: {
           roomId: room.roomId,
-          username: username,
+          userId: userId,
         },
       });
 
@@ -207,7 +207,7 @@ router.post("/join", async (ctx) => {
       // 创建关联记录
       await UserRoomModel.create({
         roomId: room.roomId,
-        username: username,
+        userId: userId,
       });
 
       // 更新用户记录的 roomUpdate 字段
@@ -216,7 +216,7 @@ router.post("/join", async (ctx) => {
         { roomUpdate: currentTimeStamp },
         {
           where: {
-            username: username,
+            userId: userId,
           },
         }
       );
@@ -233,7 +233,7 @@ router.post("/join", async (ctx) => {
 
 // 离开房间
 router.post("/leave", async (ctx) => {
-  const { username, roomId } = ctx.request.body;
+  const { userId, roomId } = ctx.request.body;
 
   try {
     const room = await roomModel.findOne({
@@ -247,7 +247,7 @@ router.post("/leave", async (ctx) => {
       const userRoom = await UserRoomModel.findOne({
         where: {
           roomId: room.roomId,
-          username: username,
+          userId: userId,
         },
       });
 
@@ -276,12 +276,12 @@ router.post("/match", async (ctx) => {
     let room;
 
     if (!isNaN(matchStr)) {
-      // 如果 matchStr 是一个合法的数字，认为是根据 id 进行匹配
+      // 如果 matchStr 是一个合法的数字，认为是根据 userId 进行匹配
       room = await userModel.findAll({
         where: {
-          id: parseInt(matchStr),
+          userId: parseInt(matchStr),
         },
-        attributes: ["id", "username"],
+        attributes: ["userId", "username"],
       });
     } else {
       // 否则认为是根据 username 进行匹配
@@ -289,7 +289,7 @@ router.post("/match", async (ctx) => {
         where: {
           username: matchStr,
         },
-        attributes: ["id", "username"],
+        attributes: ["userId", "username"],
       });
     }
 

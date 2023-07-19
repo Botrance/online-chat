@@ -1,6 +1,6 @@
 import { request } from '@umijs/max';
 
-export async function queryFriends(username: string, timestamp: number) {
+export async function queryFriends(userId: number, timestamp: number) {
   try {
     console.log('Sending request: queryFriends');
     const response = await request('/api/chat/friend/query', {
@@ -8,7 +8,7 @@ export async function queryFriends(username: string, timestamp: number) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { timestamp, username },
+      data: { timestamp, userId },
     });
     return response;
   } catch (error) {
@@ -18,7 +18,7 @@ export async function queryFriends(username: string, timestamp: number) {
 }
 
 export async function queryRooms(
-  username: string,
+  userId: number,
   roomType: string,
   timestamp: number,
 ) {
@@ -29,7 +29,7 @@ export async function queryRooms(
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { timestamp, username, roomType },
+      data: { timestamp, userId, roomType },
     });
     return response;
   } catch (error) {

@@ -15,7 +15,7 @@ const { DataTypes } = require("sequelize");
 
 const initTable = async function (name) {
   try {
-    await models[name].sync();
+    await models[name].sync({force:true});
     console.log(`Table ${name} initialized.`);
   } catch (error) {
     console.error(`Error initializing table ${name}:`, error);
@@ -35,32 +35,32 @@ const syncModels = async function () {
 // 定义关联关系
 const defineAssociations = function () {
   UserRoomModel.belongsTo(userModel, {
-    foreignKey: { name: "username", type: DataTypes.STRING(64) },
+    foreignKey: { name: "userId", type: DataTypes.STRING(64) },
   });
   UserRoomModel.belongsTo(roomModel, {
     foreignKey: { name: "roomId", type: DataTypes.STRING(64) },
   });
   userModel.hasMany(UserRoomModel, {
-    foreignKey: { name: "username", type: DataTypes.STRING(64) },
+    foreignKey: { name: "userId", type: DataTypes.STRING(64) },
   });
   roomModel.hasMany(UserRoomModel, {
     foreignKey: { name: "roomId", type: DataTypes.STRING(64) },
   });
 
   UserUserModel.belongsTo(userModel, {
-    foreignKey: { name: "majorName", type: DataTypes.STRING(64) },
+    foreignKey: { name: "majorId", type: DataTypes.STRING(64) },
   });
   UserUserModel.belongsTo(userModel, {
-    foreignKey: { name: "minorName", type: DataTypes.STRING(64) },
+    foreignKey: { name: "minorId", type: DataTypes.STRING(64) },
   });
   userModel.belongsToMany(userModel, {
     through: UserUserModel,
-    foreignKey: "majorName",
+    foreignKey: "majorId",
     as: "Majors",
   });
   userModel.belongsToMany(userModel, {
     through: UserUserModel,
-    foreignKey: "minorName",
+    foreignKey: "minorId",
     as: "Minors",
   });
 };

@@ -48,7 +48,7 @@ interface LoginRes {
   code: number;
   msg: string;
   token: string;
-  id: string;
+  userId: string;
 }
 //需要添加验证码功能
 const LoginBox: React.FC<LoginPageProps> = ({
@@ -73,7 +73,7 @@ const LoginBox: React.FC<LoginPageProps> = ({
     }).then(async function (response: LoginRes) {
       if (response.code === 100) {
         sessionStorage.setItem('username', values.username);
-        sessionStorage.setItem('id', response.id);
+        sessionStorage.setItem('userId', response.userId);
         sessionStorage.setItem('token', response.token);
         await dispatch({ type: 'authModel/loginSuccess' });
         await dispatch({ type: 'socketModel/connect' });

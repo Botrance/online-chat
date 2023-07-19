@@ -13,12 +13,12 @@ export interface InfoModelType {
   state: InfoModelState;
   effects: {
     getFriends: (
-      action: { payload: { username: string; timestamp: number } },
+      action: { payload: { userId: number; timestamp: number } },
       effects: EffectsCommandMap,
     ) => Generator<any, void, { friends: any[] }>;
     getRooms: (
       action: {
-        payload: { username: string; roomType: string; timestamp: number };
+        payload: { userId: number; roomType: string; timestamp: number };
       },
       effects: EffectsCommandMap,
     ) => Generator<any, void, { code: number; rooms: any[] }>;
@@ -76,24 +76,24 @@ const InfoModel: InfoModelType = {
   },
   effects: {
     *getFriends(
-      { payload }: { payload: { username: string; timestamp: number } },
+      { payload }: { payload: { userId: number; timestamp: number } },
       { call, put },
     ) {
-      const { username, timestamp } = payload;
+      const { userId, timestamp } = payload;
       const response: { friends: friendType[] } = yield call(
         queryFriends,
-        username,
-        timestamp
+        userId,
+        timestamp,
       );
       yield put({ type: 'saveFriends', payload: response.friends });
     },
     *getRooms(
       {
         payload,
-      }: { payload: { username: string; roomType: string; timestamp: number } },
+      }: { payload: { userId: number; roomType: string; timestamp: number } },
       { call, put, select },
     ) {
-      const { username, roomType, timestamp } = payload;
+      const { userId, roomType, timestamp } = payload;
       const { rooms } = yield select((state: InfoModelState) => state);
 
       try {
@@ -103,7 +103,7 @@ const InfoModel: InfoModelType = {
           rooms: roomType[];
         } = yield call(
           queryRooms,
-          username,
+          userId,
           roomType,
           !rooms ? undefined : timestamp, // 如果 rooms 数组为空，则不传递 timestamp 参数
         );

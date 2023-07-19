@@ -38,17 +38,17 @@ router.post("/register", async (ctx) => {
 
     // 如果用户不存在，则创建一个新用户并分配下一个可用 ID
     const lastUser = await userModel.findOne({
-      order: [["id", "DESC"]],
+      order: [["userId", "DESC"]],
     });
 
-    const nextId = lastUser ? lastUser.id + 1 : 10000;
+    const nextId = lastUser ? lastUser.userId + 1 : 10000;
 
     // 使用给定的用户名和密码创建一个新的用户
     const md5 = crypto.createHash("md5");
     const newPwd = md5.update(password).digest("hex");
 
     const newUser = await userModel.create({
-      id: nextId,
+      userId: nextId,
       username: username,
       password: newPwd,
       roomUpdate: timestamp ? timestamp : Date.now(),
@@ -111,7 +111,7 @@ router.post("/login", async (ctx) => {
           console.log("Login success");
           response.body = {
             code: 100,
-            id: data[0].id,
+            userId: data[0].userId,
             msg: "Login success",
             token: newToken,
           };

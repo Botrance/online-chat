@@ -43,14 +43,14 @@ module.exports = function (server) {
 
         // 加入房间
 
-        socket.on("joinRoom", async ({ roomId, username, timestamp }) => {
+        socket.on("joinRoom", async ({ roomId, userId, timestamp }) => {
           try {
             if (roomId) {
               // 根据 roomId 加入房间
               const room = await roomModel.findOne({ where: { roomId } });
               if (room) {
                 socket.join(room.roomId);
-                console.log(`User ${username} joined room ${room.roomId}`);
+                console.log(`User ${userId} joined room ${room.roomId}`);
                 socket.emit("resMsg", {
                   code: 100,
                   msg: "joinRoom success",
@@ -63,7 +63,7 @@ module.exports = function (server) {
                   {
                     where: {
                       roomId: roomId,
-                      username: username,
+                      userId: userId,
                     },
                   }
                 );
@@ -90,14 +90,14 @@ module.exports = function (server) {
         // 发送消息
         socket.on(
           "sendMessage",
-          async ({ roomId, username, message, timestamp }) => {
+          async ({ roomId, userId, message, timestamp }) => {
             try {
               if (roomId) {
                 // 创建消息记录
                 await msgModel.create({
                   id: generateRandomId(),
                   roomId: roomId,
-                  sender: username,
+                  sender: userId,
                   message: message,
                   timestamp: timestamp,
                 });
@@ -130,10 +130,10 @@ module.exports = function (server) {
         );
 
         // 离开房间
-        socket.on("leaveRoom", async ({ roomId, username }) => {
+        socket.on("leaveRoom", async ({ roomId, userId }) => {
           try {
             socket.leave(roomId);
-            console.log(`User ${username} left room ${roomId}`);
+            console.log(`User ${userId} left room ${roomId}`);
             socket.emit("resMsg", {
               code: 100,
               msg: "leaveRoom success.",

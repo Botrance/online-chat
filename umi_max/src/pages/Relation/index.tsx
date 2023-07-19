@@ -27,8 +27,8 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
 
-  const handleFriendClick = (minorName: string) => {
-    setSelectedFriendName(minorName);
+  const handleFriendClick = (minorId: string) => {
+    setSelectedFriendName(minorId);
   };
 
   const handleRoomClick = (roomId: string) => {

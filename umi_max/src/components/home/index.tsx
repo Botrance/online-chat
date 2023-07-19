@@ -69,23 +69,23 @@ const HomePage: React.FC<HomePageProps> = ({
 }) => {
   console.log('route home render');
 
-  const username = sessionStorage.getItem('username');
+  const userId = sessionStorage.getItem('userId');
 
   useEffect(() => {
     dispatch({
       type: 'infoModel/getFriends',
-      payload: { username: username, timestamp: Date.now() },
+      payload: { userId: userId, timestamp: Date.now() },
     });
     dispatch({
       type: 'infoModel/getRooms',
-      payload: { username: username, roomType: 'all' },
+      payload: { userId: userId, roomType: 'all' },
     });
     return () => {
       dispatch({
         type: 'infoModel/clearStorage',
       });
     };
-  }, [dispatch, username]);
+  }, [dispatch, userId]);
 
   useEffect(() => {
     const socket = socketModel.socket;
@@ -105,7 +105,7 @@ const HomePage: React.FC<HomePageProps> = ({
         dispatch({ type: 'socketModel/close' });
       }
     };
-  }, [dispatch, socketModel.socket, username]);
+  }, [dispatch, socketModel.socket, userId]);
 
   return (
     <div className="home-page-card">
