@@ -3,6 +3,7 @@ const router = new Router(); // 使用路由模块化管理
 const { Op } = require("sequelize");
 const userModel = require("../../model/user"); // 导入数据库模型
 const UserUserModel = require("../../model/related/UserUser"); // 导入关联表模型
+const DB = require("../../config/dbconfig"); // 导入数据库配置文件
 
 router.get("/test", (ctx) => {
   ctx.type = "html";
@@ -39,10 +40,7 @@ router.post("/query", async (ctx) => {
       attributes: ["minorName"],
     });
 
-    // 获取好友列表
-    const friends = userFriends.map((userFriend) => userFriend.minorName);
-
-    ctx.body = { code: 100, msg: "Query successful.", friends };
+    ctx.body = { code: 100, msg: "Query successful.", friends: userFriends };
   } catch (error) {
     console.error(error);
     ctx.body = { code: 101, msg: "Failed to query friends." };
@@ -54,14 +52,24 @@ router.post("/add", async (ctx) => {
   try {
     const { majorName, minorName, timestamp } = ctx.request.body;
 
-    // 更新 user 表的 friendUpdate 字段
-    await userModel.update(
-      { friendUpdate: timestamp },
-      { where: { username: majorName } }
-    );
+    // 使用事务保证原子操作
+    await DB.transaction(async (transaction) => {
+      // 更新 user 表的 friendUpdate 字段
+      await userModel.update(
+        { friendUpdate: timestamp ? timestamp : Date.now() },
+        {
+          where: { username: { [Op.in]: [majorName, minorName] } },
+          transaction,
+        }
+      );
 
-    // 创建关联记录
-    await UserUserModel.create({ majorName, minorName });
+      // 创建关联记录
+      await UserUserModel.create({ majorName, minorName }, { transaction });
+      await UserUserModel.create(
+        { majorName: minorName, minorName: majorName },
+        { transaction }
+      );
+    });
 
     ctx.body = { code: 100, msg: "Friend added successfully." };
   } catch (error) {
@@ -75,15 +83,27 @@ router.post("/delete", async (ctx) => {
   try {
     const { majorName, minorName, timestamp } = ctx.request.body;
 
-    // 更新 user 表的 friendUpdate 字段
-    await userModel.update(
-      { friendUpdate: timestamp },
-      { where: { username: majorName } }
-    );
+    // 使用事务保证原子操作
+    await DB.transaction(async (transaction) => {
+      // 更新 user 表的 friendUpdate 字段
+      await userModel.update(
+        { friendUpdate: timestamp ? timestamp : Date.now() },
+        {
+          where: { username: { [Op.in]: [majorName, minorName] } },
+          transaction,
+        }
+      );
 
-    // 删除关联记录
-    await UserUserModel.destroy({
-      where: { majorName, minorName },
+      // 删除关联记录
+      await UserUserModel.destroy({
+        where: {
+          [Op.or]: [
+            { majorName, minorName },
+            { majorName: minorName, minorName: majorName },
+          ],
+        },
+        transaction,
+      });
     });
 
     ctx.body = { code: 100, msg: "Friend deleted successfully." };
@@ -106,6 +126,7 @@ router.post("/match", async (ctx) => {
         where: {
           id: id,
         },
+        attributes: ["id", "username"],
       });
     } else {
       // 根据 username 匹配用户
@@ -113,6 +134,7 @@ router.post("/match", async (ctx) => {
         where: {
           username: username,
         },
+        attributes: ["id", "username"],
       });
     }
 

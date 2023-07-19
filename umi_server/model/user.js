@@ -20,8 +20,8 @@ const userModel = DB.define(
       type: DataTypes.STRING(64),
       allowNull: false,
     },
-    roomUpdate: { type: DataTypes.BIGINT, allowNull: true },
-    friendUpdate: { type: DataTypes.BIGINT, allowNull: true },
+    roomUpdate: { type: DataTypes.BIGINT, allowNull: false },
+    friendUpdate: { type: DataTypes.BIGINT, allowNull: false },
   },
   {
     freezeTableName: true, // 使用自定义表名

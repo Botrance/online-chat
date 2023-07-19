@@ -18,7 +18,7 @@ const roomModel = DB.define(
       type: DataTypes.STRING(32),
       allowNull: false, //private,public
     },
-    msgUpdate: { type: DataTypes.BIGINT, allowNull: true },
+    msgUpdate: { type: DataTypes.BIGINT, allowNull: false },
   },
   {
     freezeTableName: true, // 使用自定义表名

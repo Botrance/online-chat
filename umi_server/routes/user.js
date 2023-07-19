@@ -15,9 +15,9 @@ router.post("/token", async (ctx) => {
   await verify(ctx.request, ctx.response);
 });
 
-router.post('/register', async (ctx) => {
+router.post("/register", async (ctx) => {
   const { request, response } = ctx;
-  const { username, password } = request.body;
+  const { username, password, timestamp } = request.body;
 
   try {
     // 查找具有给定用户名的用户
@@ -31,52 +31,56 @@ router.post('/register', async (ctx) => {
     if (existingUser) {
       response.body = {
         code: 110,
-        msg: '用户名不能重复',
+        msg: "用户名不能重复",
       };
       return;
     }
 
     // 如果用户不存在，则创建一个新用户并分配下一个可用 ID
     const lastUser = await userModel.findOne({
-      order: [['id', 'DESC']],
+      order: [["id", "DESC"]],
     });
 
     const nextId = lastUser ? lastUser.id + 1 : 10000;
 
     // 使用给定的用户名和密码创建一个新的用户
-    const md5 = crypto.createHash('md5');
-    const newPwd = md5.update(password).digest('hex');
+    const md5 = crypto.createHash("md5");
+    const newPwd = md5.update(password).digest("hex");
 
     const newUser = await userModel.create({
       id: nextId,
       username: username,
       password: newPwd,
+      roomUpdate: timestamp ? timestamp : Date.now(),
+      friendUpdate: timestamp ? timestamp : Date.now(),
     });
 
     // 如果用户创建成功
     if (newUser) {
-      console.log('注册成功');
+      console.log("注册成功");
       response.body = {
         code: 100,
-        msg: '注册成功',
+        data: {
+          userId: nextId,
+        },
+        msg: "注册成功",
       };
     } else {
-      console.log('注册失败');
+      console.log("注册失败");
       response.body = {
         code: 101,
-        msg: '注册失败',
+        msg: "注册失败",
       };
     }
   } catch (err) {
-    console.log('注册失败');
+    console.log("注册失败");
     console.log(err);
     response.body = {
       code: 101,
-      msg: '注册失败',
+      msg: "注册失败",
     };
   }
 });
-
 
 router.post("/login", async (ctx) => {
   const { request, response } = ctx;
