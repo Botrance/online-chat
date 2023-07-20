@@ -28,21 +28,25 @@ export const RoomList: React.FC<RoomListProps> = React.memo(
 
     return (
       <>
-        {rooms.map((room) => (
-          <div
-            className="room-card"
-            key={room.roomId}
-            style={{
-              backgroundColor:
-                room.roomId === selectedRoomId
-                  ? 'rgb(235, 235, 235)'
-                  : 'rgb(248, 249, 249)',
-            }}
-            onClick={() => onRoomClick(room.roomId)}
-          >
-            {room.roomName}
-          </div>
-        ))}
+        {rooms ? (
+          rooms.map((room) => (
+            <div
+              className="room-card"
+              key={room.roomId}
+              style={{
+                backgroundColor:
+                  room.roomId === selectedRoomId
+                    ? 'rgb(205, 205, 205)'
+                    : 'rgb(218, 218, 218)',
+              }}
+              onClick={() => onRoomClick(room.roomId)}
+            >
+              {room.roomName}
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
       </>
     );
   },
@@ -83,8 +87,8 @@ export const FriendList: React.FC<FriendListProps> = React.memo(
               style={{
                 backgroundColor:
                   friend.userId === selectedFriendId
-                    ? 'rgb(235, 235, 235)'
-                    : 'rgb(248, 249, 249)',
+                    ? 'rgb(205, 205, 205)'
+                    : 'rgb(218, 218, 218)',
               }}
               onClick={() => onFriendClick(friend.userId)}
             >

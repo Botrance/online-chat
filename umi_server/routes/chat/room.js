@@ -45,10 +45,15 @@ router.post("/query", async (ctx) => {
         ],
       });
 
+      const rooms = userRooms.map((userRoom) => {
+        const { roomId, roomName, roomType } = userRoom.room;
+        return { roomId, roomName, roomType };
+      });
+
       if (userRooms.length === 0) {
         ctx.body = { code: 110, msg: "No rooms found for the user." };
       } else {
-        ctx.body = { code: 100, msg: "Query successful.", rooms: userRooms };
+        ctx.body = { code: 100, msg: "Query successful.", rooms: rooms };
       }
     } else {
       ctx.body = { code: 102, msg: "Room never changed" };
@@ -61,12 +66,10 @@ router.post("/query", async (ctx) => {
 
 // 创建房间
 router.post("/create", async (ctx) => {
-  const { roomName, roomType, timestamp } = ctx.request.body;
-
+  const { roomName, roomType, timestamp , majorId } = ctx.request.body;
+  // 创建一个事务
+  const transaction = await DB.transaction();
   try {
-    // 创建一个事务
-    const transaction = await DB.transaction();
-
     // 查找最后一个房间记录，以便确定下一个 roomId
     const lastRoom = await roomModel.findOne({
       order: [["roomId", "DESC"]],
@@ -82,6 +85,7 @@ router.post("/create", async (ctx) => {
         roomName: roomName,
         roomType: roomType ? roomType : "public",
         msgUpdate: timestamp ? timestamp : Date.now(),
+        majorId
       },
       { transaction }
     );
@@ -101,11 +105,9 @@ router.post("/create", async (ctx) => {
 // 删除房间
 router.post("/delete", async (ctx) => {
   const { roomId } = ctx.request.body;
-
+  // 创建一个事务
+  const transaction = await DB.transaction();
   try {
-    // 创建一个事务
-    const transaction = await DB.transaction();
-
     // 查询要删除的房间是否存在
     const room = await roomModel.findOne({
       where: {
