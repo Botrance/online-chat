@@ -191,12 +191,12 @@ const PureMixModal: React.FC<MixModalProps> = ({
       .then(async (values) => {
         const { roomName } = values;
         try {
-          createRoom(roomName, userId).then((result) => {
+          createRoom(userId, roomName).then((result) => {
             if (result!.code === 100)
               dispatch({
                 type: 'infoModel/getRooms',
                 payload: {
-                  roomName,
+                  userId,
                   timestamp: Date.now(),
                 },
               });

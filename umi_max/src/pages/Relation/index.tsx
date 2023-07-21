@@ -3,8 +3,9 @@ import { SearchWithAdd } from '@/components/search';
 import SoftTab from '@/components/softTab';
 import { roomType, tabType } from '@/global/define';
 import { InfoModelState } from '@/models/infoModel';
+import { createRoom } from '@/services/chat';
 import { ProCard } from '@ant-design/pro-components';
-import { Dispatch, connect } from '@umijs/max';
+import { Dispatch, connect, history } from '@umijs/max';
 import { useState } from 'react';
 import './index.less';
 
@@ -17,18 +18,30 @@ const tabs: tabType[] = [
   { id: '1', label: '朋友' },
   { id: '2', label: '群聊' },
 ];
+const userId = parseInt(sessionStorage.getItem('userId')!);
 
 const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
   console.log('route realtion render');
 
-  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(
-    null,
-  );
+  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
 
   const handleFriendClick = (minorId: string) => {
     setSelectedFriendId(minorId);
+  };
+
+  const handleFriendDbClick = (minorId: string) => {
+    createRoom(userId, undefined, 'private').then((result) => {
+      if (result!.code === 100) history.push('/chat');
+      dispatch({
+        type: 'infoModel/getRooms',
+        payload: {
+          userId,
+          timestamp: Date.now(),
+        },
+      });
+    });
   };
 
   const handleRoomClick = (roomId: string) => {
@@ -86,6 +99,7 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
                 friends={infoModel.friends}
                 selectedFriendId={selectedFriendId}
                 onFriendClick={handleFriendClick}
+                OnFriendDbClick={handleFriendDbClick}
               />
             </div>
             <div

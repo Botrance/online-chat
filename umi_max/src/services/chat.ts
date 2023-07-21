@@ -132,7 +132,7 @@ export async function joinRoom(userId: number, roomId: number) {
 }
 
 // 创建群聊
-export async function createRoom(majorId: number, roomName: number) {
+export async function createRoom(majorId: number|number[], roomName?: string ,roomType?:string) {
   try {
     console.log('Sending request: createRoom');
     const response = await request('/api/chat/room/create', {

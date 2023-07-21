@@ -4,7 +4,7 @@ const userModel = require("../../model/user"); // 导入数据库模型
 const roomModel = require("../../model/room"); // 导入数据库模型
 const UserRoomModel = require("../../model/related/UserRoom"); // 导入关联表模型
 const DB = require("../../config/dbconfig"); // 导入数据库配置文件
-
+const Op = require("sequelize");
 router.get("/test", (ctx) => {
   ctx.type = "html";
   ctx.body = "<h1>test</h1>";
@@ -66,10 +66,36 @@ router.post("/query", async (ctx) => {
 
 // 创建房间
 router.post("/create", async (ctx) => {
-  const { roomName, roomType, timestamp, majorId } = ctx.request.body;
+  const {
+    roomName,
+    roomType = "public",
+    timestamp,
+    majorId,
+  } = ctx.request.body;
+
   // 创建一个事务
   const transaction = await DB.transaction();
+
   try {
+    // 查找已存在的房间记录，当 roomType 为 private 时，检查是否已存在相应 roomName 的房间
+    let existingRoom = null;
+    if (roomType === "private") {
+      existingRoom = await roomModel.findOne({
+        where: {
+          [Op.or]: [
+            { roomName: `${majorId[0]}-${majorId[1]}` },
+            { roomName: `${majorId[1]}-${majorId[0]}` },
+          ],
+        },
+      });
+    }
+
+    // 如果已存在相应房间，直接返回该房间信息
+    if (existingRoom) {
+      ctx.body = { code: 110, msg: "Room already exists.", room: existingRoom };
+      return;
+    }
+
     // 查找最后一个房间记录，以便确定下一个 roomId
     const lastRoom = await roomModel.findOne({
       order: [["roomId", "DESC"]],
@@ -78,17 +104,31 @@ router.post("/create", async (ctx) => {
 
     const newRoomId = lastRoom ? lastRoom.roomId + 1 : 10000;
 
+    let createMajorId;
+    let createRoomName;
+
+    if (roomType === "private") {
+      // 当 roomType 为 private 时，根据 majorId 数组创建更新后的 majorId 和 roomName
+      createMajorId = majorId[0];
+      createRoomName = `${majorId[0]}-${majorId[1]}`;
+    } else {
+      createMajorId = majorId;
+      createRoomName = roomName;
+    }
+
     // 创建房间记录
     const room = await roomModel.create(
       {
         roomId: newRoomId,
-        roomName: roomName,
-        roomType: roomType ? roomType : "public",
+        roomName: createRoomName,
+        roomType,
         msgUpdate: timestamp ? timestamp : Date.now(),
-        majorId,
+        majorId: createMajorId,
       },
       { transaction }
     );
+
+    // userId 直接使用 majorId ，majorId是数组时直接触发Op.in简写效果
 
     // 创建关联记录
     await UserRoomModel.create({
@@ -96,14 +136,11 @@ router.post("/create", async (ctx) => {
       userId: majorId,
     });
 
-    // 更新用户记录的 roomUpdate 字段
-    const currentTimeStamp = Date.now();
+    // userModel 更新
     await userModel.update(
-      { roomUpdate: currentTimeStamp },
+      { roomUpdate: Date.now() },
       {
-        where: {
-          userId: majorId,
-        },
+        where: { userId: majorId },
       },
       { transaction }
     );
@@ -161,9 +198,8 @@ router.post("/delete", async (ctx) => {
       const userNames = userRooms.map((userRoom) => userRoom.userId);
 
       // 更新这些用户的 roomUpdate 字段
-      const currentTimeStamp = Date.now();
       await userModel.update(
-        { roomUpdate: currentTimeStamp },
+        { roomUpdate: Date.now() },
         {
           where: {
             userId: userNames,

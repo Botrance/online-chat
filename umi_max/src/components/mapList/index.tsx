@@ -16,6 +16,7 @@ interface FriendListProps {
   friends: friendType[];
   selectedFriendId: string | null;
   onFriendClick: (roomId: string) => void;
+  OnFriendDbClick:(roomId: string) => void;
 }
 
 export const RoomList: React.FC<RoomListProps> = React.memo(
@@ -76,7 +77,7 @@ export const MsgList: React.FC<MsgListProps> = React.memo(
 );
 
 export const FriendList: React.FC<FriendListProps> = React.memo(
-  ({ friends, selectedFriendId, onFriendClick }) => {
+  ({ friends, selectedFriendId, onFriendClick,OnFriendDbClick }) => {
     return (
       <>
         {friends ? (
@@ -91,6 +92,7 @@ export const FriendList: React.FC<FriendListProps> = React.memo(
                     : 'rgb(218, 218, 218)',
               }}
               onClick={() => onFriendClick(friend.userId)}
+              onDoubleClick={() => OnFriendDbClick(friend.userId)}
             >
               {friend.userName}
             </div>
