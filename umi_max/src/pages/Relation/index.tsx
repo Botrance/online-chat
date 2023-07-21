@@ -21,14 +21,14 @@ const tabs: tabType[] = [
 const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
   console.log('route realtion render');
 
-  const [selectedFriendName, setSelectedFriendName] = useState<string | null>(
+  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(
     null,
   );
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedTabId, setSelectedTabId] = useState<string | null>(null);
 
   const handleFriendClick = (minorId: string) => {
-    setSelectedFriendName(minorId);
+    setSelectedFriendId(minorId);
   };
 
   const handleRoomClick = (roomId: string) => {
@@ -79,12 +79,12 @@ const RelationPage: React.FC<RelationPageProps> = ({ dispatch, infoModel }) => {
             <div
               style={{
                 overflowY: 'auto',
-                display: selectedTabId === '2' ? '' : 'none',
+                display: selectedTabId === '1' ? '' : 'none',
               }}
             >
               <FriendList
                 friends={infoModel.friends}
-                selectedFriendName={selectedFriendName}
+                selectedFriendId={selectedFriendId}
                 onFriendClick={handleFriendClick}
               />
             </div>

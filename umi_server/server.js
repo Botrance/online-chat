@@ -2,34 +2,33 @@ const Router = require("koa-router");
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser"); // 使用才能解析post数据
 const cors = require("koa2-cors");
-const Redis = require("redis");
-const { promisify } = require("util");
-
-const { Op } = require("sequelize");
 
 const app = new Koa();
 const router = new Router();
 const PORT = 3030;
 const server = require("http").Server(app.callback());
-
 const userModel = require("./model/user"); // 导入数据库模型
 
-// 创建 Redis 客户端实例
-const redisClient = Redis.createClient();
-const getAsync = promisify(redisClient.get).bind(redisClient);
-const setexAsync = promisify(redisClient.setEx).bind(redisClient);
+const Redis = require("ioredis");
 
-// 将 Redis 客户端实例挂载到 Koa 的上下文中
-app.context.redisClient = redisClient;
-app.context.getAsync = getAsync;
-app.context.setexAsync = setexAsync;
+// 创建 Redis 客户端实例，默认连接到本地 6379 端口
+const redisClient = new Redis();
+
+// 连接成功后的回调
+redisClient.on("connect", () => {
+  console.log("Connected to Redis server");
+});
+
+// 连接失败后的回调
+redisClient.on("error", (err) => {
+  console.error("Error connecting to Redis server:", err);
+});
 
 // 通用的 Redis 缓存函数，用于缓存 userId 和对应的 userName
-async function cacheUserNames(ctx, ids) {
+async function cacheUserNames(ids) {
+  console.log(ids)
   const cacheKeys = ids.map((id) => `userName:${id}`);
-  const cachedUserNames = await Promise.all(
-    cacheKeys.map((key) => ctx.getAsync(key))
-  );
+  const cachedUserNames = await redisClient.hmget("userNames", ...cacheKeys);
 
   const uncachedIds = [];
   const queryPromises = [];
@@ -62,7 +61,7 @@ async function cacheUserNames(ctx, ids) {
   for (let i = 0; i < uncachedIds.length; i++) {
     const user = users[i];
     if (user && user.userId && user.userName) {
-      await ctx.setexAsync(`userName:${user.userId}`, 3600, user.userName); // 设置缓存过期时间为1小时
+      await redisClient.hset("userNames", `userName:${user.userId}`, user.userName); // 存储到 Redis 的 Hash 表中
       // 将 userName 添加到 userNameMap 中
       userNameMap[user.userId] = user.userName;
     }
@@ -120,3 +119,6 @@ router.use("/api/user", userRouter);
 router.use("/api/chat", chatRouter);
 // router.use("/chat", verifyTokenMiddleware);
 app.use(router.routes()).use(router.allowedMethods());
+app.on("close", () => {
+  redisClient.quit();
+});

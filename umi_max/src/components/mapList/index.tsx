@@ -14,7 +14,7 @@ interface MsgListProps {
 
 interface FriendListProps {
   friends: friendType[];
-  selectedFriendName: string | null;
+  selectedFriendId: string | null;
   onFriendClick: (roomId: string) => void;
 }
 
@@ -28,21 +28,25 @@ export const RoomList: React.FC<RoomListProps> = React.memo(
 
     return (
       <>
-        {rooms.map((room) => (
-          <div
-            className="room-card"
-            key={room.roomId}
-            style={{
-              backgroundColor:
-                room.roomId === selectedRoomId
-                  ? 'rgb(235, 235, 235)'
-                  : 'rgb(248, 249, 249)',
-            }}
-            onClick={() => onRoomClick(room.roomId)}
-          >
-            {room.roomName}
-          </div>
-        ))}
+        {rooms ? (
+          rooms.map((room) => (
+            <div
+              className="room-card"
+              key={room.roomId}
+              style={{
+                backgroundColor:
+                  room.roomId === selectedRoomId
+                    ? 'rgb(205, 205, 205)'
+                    : 'rgb(218, 218, 218)',
+              }}
+              onClick={() => onRoomClick(room.roomId)}
+            >
+              {room.roomName}
+            </div>
+          ))
+        ) : (
+          <></>
+        )}
       </>
     );
   },
@@ -72,23 +76,23 @@ export const MsgList: React.FC<MsgListProps> = React.memo(
 );
 
 export const FriendList: React.FC<FriendListProps> = React.memo(
-  ({ friends, selectedFriendName, onFriendClick }) => {
+  ({ friends, selectedFriendId, onFriendClick }) => {
     return (
       <>
         {friends ? (
           friends.map((friend) => (
             <div
-              className="room-card"
-              key={friend.minorId}
+              className="friend-card"
+              key={friend.userId}
               style={{
                 backgroundColor:
-                  friend.minorId === selectedFriendName
-                    ? 'rgb(235, 235, 235)'
-                    : 'rgb(248, 249, 249)',
+                  friend.userId === selectedFriendId
+                    ? 'rgb(205, 205, 205)'
+                    : 'rgb(218, 218, 218)',
               }}
-              onClick={() => onFriendClick(friend.minorId)}
+              onClick={() => onFriendClick(friend.userId)}
             >
-              {friend.minorId}
+              {friend.userName}
             </div>
           ))
         ) : (
