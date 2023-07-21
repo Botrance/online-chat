@@ -96,7 +96,7 @@ export async function matchRooms(matchStr: string) {
 }
 
 // 添加好友
-export async function addFriend(majorId: number,minorId:number) {
+export async function addFriend(majorId: number, minorId: number) {
   try {
     console.log('Sending request: addFriend');
     const response = await request('/api/chat/friend/add', {
@@ -104,11 +104,47 @@ export async function addFriend(majorId: number,minorId:number) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { majorId,minorId }, // 使用matchStr作为房间名进行匹配
+      data: { majorId, minorId }, // 使用matchStr作为房间名进行匹配
     });
     return response;
   } catch (error) {
     console.error('Failed to add friend:', error);
+    return [];
+  }
+}
+
+// 加入群聊
+export async function joinRoom(userId: number, roomId: number) {
+  try {
+    console.log('Sending request: joinRoom');
+    const response = await request('/api/chat/room/join', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { userId, roomId }, // 使用matchStr作为房间名进行匹配
+    });
+    return response;
+  } catch (error) {
+    console.error('Failed to join room:', error);
+    return [];
+  }
+}
+
+// 创建群聊
+export async function createRoom(majorId: number, roomId: number) {
+  try {
+    console.log('Sending request: createRoom');
+    const response = await request('/api/chat/room/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: { majorId, roomId }, // 使用matchStr作为房间名进行匹配
+    });
+    return response;
+  } catch (error) {
+    console.error('Failed to create room:', error);
     return [];
   }
 }

@@ -1,7 +1,13 @@
 import SoftTab from '@/components/softTab';
 import { tabType } from '@/global/define';
 import { InfoModelState } from '@/models/infoModel';
-import { addFriend, matchFriends, matchRooms } from '@/services/chat';
+import {
+  addFriend,
+  createRoom,
+  joinRoom,
+  matchFriends,
+  matchRooms,
+} from '@/services/chat';
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { ProList } from '@ant-design/pro-components';
 import { Dispatch, connect } from '@umijs/max';
@@ -58,11 +64,17 @@ const PureMixModal: React.FC<MixModalProps> = ({
   dispatch,
 }) => {
   const [selectedTabId, setSelectedTabId] = useState<string>('1');
-  const [form] = Form.useForm();
+  const [matchForm] = Form.useForm();
+  const [createForm] = Form.useForm();
+
   const [dataUsers, setDataUsers] = useState<any[] | null>(null);
   const [dataRooms, setDataRooms] = useState<any[] | null>(null);
   const handleModalClose = () => {
     setModalOpen('null');
+    setDataUsers(null);
+    setDataRooms(null);
+    matchForm.resetFields();
+    createForm.resetFields();
   };
 
   const handleTabClick = (id: string) => {
@@ -70,7 +82,7 @@ const PureMixModal: React.FC<MixModalProps> = ({
   };
 
   const handleSubmit = () => {
-    form
+    matchForm
       .validateFields()
       .then(async (values) => {
         const { friend, room } = values;
@@ -88,10 +100,25 @@ const PureMixModal: React.FC<MixModalProps> = ({
                       size={2}
                       style={{ display: 'flex' }}
                     >
-                      <span>{item.roomId}</span>
-                      <span>{item.roomName}</span>
-                      <Button size="small" style={{ fontSize: '12px' }}>
-                        添加房间
+                      <span className="no-ellispe">id:{item.roomId}</span>
+                      <span className="no-ellispe">{item.roomName}</span>
+                      <Button
+                        size="small"
+                        style={{ fontSize: '12px' }}
+                        onClick={() => {
+                          joinRoom(userId, item.roomId).then((result) => {
+                            if (result!.code === 100)
+                              dispatch({
+                                type: 'infoModel/getRooms',
+                                payload: {
+                                  roomId:item.roomId,
+                                  timestamp: Date.now(),
+                                },
+                              });
+                          });
+                        }}
+                      >
+                        加入群聊
                       </Button>
                     </Space>
                   </div>
@@ -130,7 +157,7 @@ const PureMixModal: React.FC<MixModalProps> = ({
                               dispatch({
                                 type: 'infoModel/getFriends',
                                 payload: {
-                                  userId: userId,
+                                  userId,
                                   timestamp: Date.now(),
                                 },
                               });
@@ -150,7 +177,35 @@ const PureMixModal: React.FC<MixModalProps> = ({
           }
         }
 
-        // form.resetFields();
+        // matchForm.resetFields();
+      })
+      .catch((error) => {
+        console.error('Error validating fields:', error);
+        // 在这里处理表单验证的错误情况
+      });
+  };
+
+  const handleCreate = () => {
+    createForm
+      .validateFields()
+      .then(async (values) => {
+        const { roomId, majorId } = values;
+        try {
+          createRoom(roomId, majorId).then((result) => {
+            if (result!.code === 100)
+              dispatch({
+                type: 'infoModel/getRooms',
+                payload: {
+                  roomId,
+                  timestamp: Date.now(),
+                },
+              });
+          });
+        } catch (error) {
+          console.error('Error create room:', error);
+        }
+
+        createForm.resetFields();
       })
       .catch((error) => {
         console.error('Error validating fields:', error);
@@ -182,7 +237,10 @@ const PureMixModal: React.FC<MixModalProps> = ({
           }}
           childStyle={{ width: '60px', fontSize: '16px' }}
         />
-        <Form form={form} style={{ position: 'relative', margin: '40px 0px' }}>
+        <Form
+          form={matchForm}
+          style={{ position: 'relative', margin: '40px 0px' }}
+        >
           <Form.Item
             style={{
               display: selectedTabId === '1' ? '' : 'none',
@@ -250,8 +308,29 @@ const PureMixModal: React.FC<MixModalProps> = ({
         destroyOnClose={true}
         style={{ display: 'absolute', top: '30%' }}
         width={600}
+        title={'创建群聊'}
       >
-        <p>RoomLabel 内容...</p>
+        <Space
+          direction="vertical"
+          size={1}
+          style={{
+            display: 'flex',
+            fontSize: '12px',
+            overflow: 'hidden',
+          }}
+        >
+          <Form form={createForm}>
+            <Form.Item name="roomId">
+              <Input></Input>
+            </Form.Item>
+
+            <Form.Item name="majorId">
+              <Input></Input>
+            </Form.Item>
+
+            <Button onClick={handleCreate}></Button>
+          </Form>
+        </Space>
       </Modal>
     </>
   );

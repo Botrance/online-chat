@@ -66,7 +66,7 @@ router.post("/query", async (ctx) => {
 
 // 创建房间
 router.post("/create", async (ctx) => {
-  const { roomName, roomType, timestamp , majorId } = ctx.request.body;
+  const { roomName, roomType, timestamp, majorId } = ctx.request.body;
   // 创建一个事务
   const transaction = await DB.transaction();
   try {
@@ -85,7 +85,25 @@ router.post("/create", async (ctx) => {
         roomName: roomName,
         roomType: roomType ? roomType : "public",
         msgUpdate: timestamp ? timestamp : Date.now(),
-        majorId
+        majorId,
+      },
+      { transaction }
+    );
+
+    // 创建关联记录
+    await UserRoomModel.create({
+      roomId: room.roomId,
+      userId: majorId,
+    });
+
+    // 更新用户记录的 roomUpdate 字段
+    const currentTimeStamp = Date.now();
+    await userModel.update(
+      { roomUpdate: currentTimeStamp },
+      {
+        where: {
+          userId: majorId,
+        },
       },
       { transaction }
     );
