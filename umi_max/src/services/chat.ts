@@ -132,7 +132,7 @@ export async function joinRoom(userId: number, roomId: number) {
 }
 
 // 创建群聊
-export async function createRoom(majorId: number, roomId: number) {
+export async function createRoom(majorId: number, roomName: number) {
   try {
     console.log('Sending request: createRoom');
     const response = await request('/api/chat/room/create', {
@@ -140,7 +140,7 @@ export async function createRoom(majorId: number, roomId: number) {
       headers: {
         'Content-Type': 'application/json',
       },
-      data: { majorId, roomId }, // 使用matchStr作为房间名进行匹配
+      data: { majorId, roomName }, // 使用matchStr作为房间名进行匹配
     });
     return response;
   } catch (error) {

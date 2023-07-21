@@ -111,7 +111,7 @@ const PureMixModal: React.FC<MixModalProps> = ({
                               dispatch({
                                 type: 'infoModel/getRooms',
                                 payload: {
-                                  roomId:item.roomId,
+                                  roomId: item.roomId,
                                   timestamp: Date.now(),
                                 },
                               });
@@ -189,14 +189,14 @@ const PureMixModal: React.FC<MixModalProps> = ({
     createForm
       .validateFields()
       .then(async (values) => {
-        const { roomId, majorId } = values;
+        const { roomName } = values;
         try {
-          createRoom(roomId, majorId).then((result) => {
+          createRoom(roomName, userId).then((result) => {
             if (result!.code === 100)
               dispatch({
                 type: 'infoModel/getRooms',
                 payload: {
-                  roomId,
+                  roomName,
                   timestamp: Date.now(),
                 },
               });
@@ -320,15 +320,11 @@ const PureMixModal: React.FC<MixModalProps> = ({
           }}
         >
           <Form form={createForm}>
-            <Form.Item name="roomId">
+            <Form.Item name="roomName">
               <Input></Input>
             </Form.Item>
 
-            <Form.Item name="majorId">
-              <Input></Input>
-            </Form.Item>
-
-            <Button onClick={handleCreate}></Button>
+            <Button onClick={handleCreate}>创建群聊</Button>
           </Form>
         </Space>
       </Modal>
